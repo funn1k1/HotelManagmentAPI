@@ -1,3 +1,6 @@
+using HotelManagmentAPI.Logging;
+using HotelManagmentAPI.Logging.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // You can add Serilog capabilities
@@ -13,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Host.UseSerilog();
 
 // Add services to the container.
+
+builder.Services.AddSingleton<ILogging, Logging>();
 builder.Services.AddControllers(options =>
 {
     //options.ReturnHttpNotAcceptable = true;

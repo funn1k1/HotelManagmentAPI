@@ -1,4 +1,6 @@
 ﻿using HotelManagmentAPI.Data;
+using HotelManagmentAPI.Logging.Enums;
+using HotelManagmentAPI.Logging.Interfaces;
 using HotelManagmentAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +12,19 @@ namespace HotelManagmentAPI.Controllers
     public class HotelAPIController : ControllerBase
     {
         private readonly ILogger<HotelAPIController> _logger;
+        private readonly ILogging _logging;
 
-        public HotelAPIController(ILogger<HotelAPIController> logger)
+        public HotelAPIController(ILogger<HotelAPIController> logger, ILogging logging)
         {
             _logger = logger;
+            _logging = logging;
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<HotelDTO>> GetHotels()
         {
-            _logger.LogInformation("Getting all hotels");
+            //_logger.LogInformation("Getting all hotels");
+            _logging.Log(LogLevels.Error, "Getting all hotels");
             var hotels = HotelStore.Hotels;
             return Ok(hotels);
         }
