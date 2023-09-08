@@ -1,23 +1,13 @@
-using HotelManagmentAPI.Logging;
-using HotelManagmentAPI.Logging.Interfaces;
+using HotelManagmentAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
-// You can add Serilog capabilities
-//Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
-//    .WriteTo.File("logs/hotelLog-.txt", rollingInterval: RollingInterval.Day)
-//    .WriteTo.Console()
-//    .CreateLogger();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+);
 
-////Log.Logger = new LoggerConfiguration()
-////    .ReadFrom.Configuration(builder.Configuration)
-////    .CreateLogger();
-
-//builder.Host.UseSerilog();
-
-// Add services to the container.
-
-builder.Services.AddSingleton<ILogging, Logging>();
 builder.Services.AddControllers(options =>
 {
     //options.ReturnHttpNotAcceptable = true;
