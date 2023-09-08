@@ -9,9 +9,17 @@ namespace HotelManagmentAPI.Controllers
     [ApiController]
     public class HotelAPIController : ControllerBase
     {
+        private readonly ILogger<HotelAPIController> _logger;
+
+        public HotelAPIController(ILogger<HotelAPIController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<HotelDTO>> GetHotels()
         {
+            _logger.LogInformation("Getting all hotels");
             var hotels = HotelStore.Hotels;
             return Ok(hotels);
         }

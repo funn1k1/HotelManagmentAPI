@@ -1,7 +1,18 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// You can add Serilog capabilities
+//Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
+//    .WriteTo.File("logs/hotelLog-.txt", rollingInterval: RollingInterval.Day)
+//    .WriteTo.Console()
+//    .CreateLogger();
 
+////Log.Logger = new LoggerConfiguration()
+////    .ReadFrom.Configuration(builder.Configuration)
+////    .CreateLogger();
+
+//builder.Host.UseSerilog();
+
+// Add services to the container.
 builder.Services.AddControllers(options =>
 {
     //options.ReturnHttpNotAcceptable = true;
@@ -19,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
