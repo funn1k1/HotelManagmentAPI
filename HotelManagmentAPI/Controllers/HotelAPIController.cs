@@ -1,8 +1,10 @@
-﻿using HotelManagmentAPI.Data;
+﻿using AutoMapper;
+using HotelManagmentAPI.Data;
 using HotelManagmentAPI.Models;
 using HotelManagmentAPI.Models.DTO;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagmentAPI.Controllers
 {
@@ -11,17 +13,19 @@ namespace HotelManagmentAPI.Controllers
     public class HotelAPIController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
+        private readonly IMapper _mapper;
 
-        public HotelAPIController(ApplicationDbContext db)
+        public HotelAPIController(ApplicationDbContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<HotelDTO>> GetHotels()
+        public async Task<ActionResult<IEnumerable<HotelDTO>>> GetHotelsAsync()
         {
-            var hotels = _db.Hotels.ToList();
-            return Ok(hotels);
+            var hotels = await _db.Hotels.ToListAsync();
+            return Ok(_mapper.Map<List<HotelDTO>>(hotels));
         }
 
         [HttpGet("{id}", Name = "GetHotel")]
@@ -29,15 +33,15 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status404NotFound),
             ProducesResponseType(StatusCodes.Status200OK)
         ]
-        public ActionResult<HotelDTO> GetHotel(int id)
+        public async Task<ActionResult<HotelDTO>> GetHotelAsync(int id)
         {
-            var hotel = _db.Hotels.FirstOrDefault(h => h.Id == id);
+            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
             if (hotel == null)
             {
                 return NotFound();
             }
 
-            return Ok(hotel);
+            return Ok(_mapper.Map<HotelDTO>(hotel));
         }
 
         [HttpPost]
@@ -47,51 +51,35 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status400BadRequest),
             ProducesResponseType(StatusCodes.Status500InternalServerError)
         ]
-        public ActionResult<HotelDTO> CreateHotel([FromBody] HotelDTO hotelDto)
+        public async Task<ActionResult<HotelDTO>> CreateHotelAsync([FromBody] HotelCreateDTO hotelDto)
         {
-            var hotel = _db.Hotels.FirstOrDefault(h => h.Name == hotelDto.Name);
+            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Name == hotelDto.Name);
             if (hotel != null)
             {
                 ModelState.AddModelError("Name", "A hotel with this name already exists");
                 return BadRequest(ModelState);
             }
 
-            if (hotelDto.Id < 0 || hotelDto.Id > 0)
-            {
-                return BadRequest("Id must be 0");
-            }
+            var newHotel = _mapper.Map<Hotel>(hotelDto);
 
-            hotelDto.Id = _db.Hotels.Max(x => x.Id) + 1;
-            var newHotel = new Hotel
-            {
-                Name = hotelDto.Name,
-                Address = hotelDto.Address,
-                ImageUrl = hotelDto.ImageUrl,
-                Description = hotelDto.Description,
-                Rating = hotelDto.Rating,
-                PhoneNumber = hotelDto.PhoneNumber,
-                Email = hotelDto.Email,
-                CreatedDate = DateTime.Now,
-            };
-
-            _db.Hotels.Add(newHotel);
-            _db.SaveChanges();
-            return CreatedAtRoute("GetHotel", new { id = newHotel.Id }, newHotel);
+            await _db.Hotels.AddAsync(newHotel);
+            await _db.SaveChangesAsync();
+            return CreatedAtRoute("GetHotel", new { id = newHotel.Id }, _mapper.Map<HotelDTO>(newHotel));
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteHotel(int id)
+        public async Task<IActionResult> DeleteHotelAsync(int id)
         {
-            var hotel = _db.Hotels.FirstOrDefault(h => h.Id == id);
+            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
             if (hotel == null)
             {
                 return NotFound();
             }
 
             _db.Hotels.Remove(hotel);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return NoContent();
         }
 
@@ -99,29 +87,17 @@ namespace HotelManagmentAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult UpdateHotel(int id, [FromBody] HotelDTO hotelDto)
+        public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] HotelUpdateDTO hotelDto)
         {
-            if (id != hotelDto.Id)
-            {
-                return BadRequest("Check id match");
-            }
-
-            var hotel = _db.Hotels.FirstOrDefault(h => h.Id == id);
+            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
             if (hotel == null)
             {
                 return NotFound();
             }
 
-            hotel.Name = hotelDto.Name;
-            hotel.Address = hotelDto.Address;
-            hotel.Description = hotelDto.Description;
-            hotel.ImageUrl = hotelDto.ImageUrl;
-            hotel.Rating = hotelDto.Rating;
-            hotel.PhoneNumber = hotelDto.PhoneNumber;
-            hotel.Email = hotelDto.Email;
-
+            _mapper.Map(hotelDto, hotel);
             _db.Hotels.Update(hotel);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             return NoContent();
         }
@@ -129,37 +105,20 @@ namespace HotelManagmentAPI.Controllers
         [HttpPatch("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult UpdateHotel(int id, [FromBody] JsonPatchDocument<HotelDTO> patchDto)
+        public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] JsonPatchDocument<HotelUpdateDTO> patchDto)
         {
-            var hotel = _db.Hotels.FirstOrDefault(h => h.Id == id);
+            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
             if (hotel == null)
             {
                 return NotFound();
             }
 
-            var hotelDto = new HotelDTO
-            {
-                Id = hotel.Id,
-                Name = hotel.Name,
-                Address = hotel.Address,
-                ImageUrl = hotel.ImageUrl,
-                Description = hotel.Description,
-                Rating = hotel.Rating,
-                PhoneNumber = hotel.PhoneNumber,
-                Email = hotel.Email,
-            };
-            patchDto.ApplyTo(hotelDto);
-
-            hotel.Name = hotelDto.Name;
-            hotel.Address = hotelDto.Address;
-            hotel.ImageUrl = hotelDto.ImageUrl;
-            hotel.Description = hotelDto.Description;
-            hotel.Rating = hotelDto.Rating;
-            hotel.PhoneNumber = hotelDto.PhoneNumber;
-            hotel.Email = hotelDto.Email;
-
+            var hotelUpdateDto = _mapper.Map<HotelUpdateDTO>(hotel);
+            patchDto.ApplyTo(hotelUpdateDto);
+            _mapper.Map(hotelUpdateDto, hotel);
             _db.Hotels.Update(hotel);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
+
             return NoContent();
         }
     }

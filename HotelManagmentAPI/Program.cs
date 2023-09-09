@@ -1,3 +1,4 @@
+using HotelManagmentAPI;
 using HotelManagmentAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,7 @@ var configuration = builder.Configuration;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
 );
-
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 builder.Services.AddControllers(options =>
 {
     //options.ReturnHttpNotAcceptable = true;
