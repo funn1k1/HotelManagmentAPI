@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using HotelManagmentAPI.Data;
+﻿using System.Net;
+using AutoMapper;
 using HotelManagmentAPI.Models;
-using HotelManagmentAPI.Models.DTO;
+using HotelManagmentAPI.Models.DTO.Hotel;
+using HotelManagmentAPI.Repository.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagmentAPI.Controllers
 {
@@ -12,20 +12,25 @@ namespace HotelManagmentAPI.Controllers
     [ApiController]
     public class HotelAPIController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
+        private readonly IHotelRepository _hotelRepo;
 
-        public HotelAPIController(ApplicationDbContext db, IMapper mapper)
+        public HotelAPIController(IHotelRepository hotelRepo, IMapper mapper)
         {
-            _db = db;
             _mapper = mapper;
+            _hotelRepo = hotelRepo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HotelDTO>>> GetHotelsAsync()
+        public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync()
         {
-            var hotels = await _db.Hotels.ToListAsync();
-            return Ok(_mapper.Map<List<HotelDTO>>(hotels));
+            var response = new APIResponse<List<HotelDTO>>
+            {
+                IsSuccess = true,
+                Result = _mapper.Map<List<HotelDTO>>(await _hotelRepo.GetAllAsync()),
+                StatusCode = HttpStatusCode.OK
+            };
+            return Ok(response);
         }
 
         [HttpGet("{id}", Name = "GetHotel")]
@@ -35,13 +40,20 @@ namespace HotelManagmentAPI.Controllers
         ]
         public async Task<ActionResult<HotelDTO>> GetHotelAsync(int id)
         {
-            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var response = new APIResponse<HotelDTO>();
+            var hotel = await _hotelRepo.GetAsync(x => x.Id == id);
             if (hotel == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.AddErrorMessage("Hotel not found");
+                return NotFound(response);
             }
 
-            return Ok(_mapper.Map<HotelDTO>(hotel));
+            response.Result = _mapper.Map<HotelDTO>(hotel);
+
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.OK;
+            return Ok(response);
         }
 
         [HttpPost]
@@ -51,20 +63,25 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status400BadRequest),
             ProducesResponseType(StatusCodes.Status500InternalServerError)
         ]
-        public async Task<ActionResult<HotelDTO>> CreateHotelAsync([FromBody] HotelCreateDTO hotelDto)
+        public async Task<IActionResult> CreateHotelAsync([FromBody] HotelCreateDTO hotelDto)
         {
-            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Name == hotelDto.Name);
+            var response = new APIResponse<Hotel>();
+            var hotel = await _hotelRepo.GetAsync(h => h.Name == hotelDto.Name);
             if (hotel != null)
             {
-                ModelState.AddModelError("Name", "A hotel with this name already exists");
-                return BadRequest(ModelState);
+                //ModelState.AddModelError("Name", "A hotel with this name already exists");
+                response.StatusCode = HttpStatusCode.BadRequest;
+                response.AddErrorMessage("Hotel with this name already exists");
+                return BadRequest(response);
             }
 
             var newHotel = _mapper.Map<Hotel>(hotelDto);
+            await _hotelRepo.AddAsync(newHotel);
 
-            await _db.Hotels.AddAsync(newHotel);
-            await _db.SaveChangesAsync();
-            return CreatedAtRoute("GetHotel", new { id = newHotel.Id }, _mapper.Map<HotelDTO>(newHotel));
+            response.IsSuccess = true;
+            response.StatusCode = HttpStatusCode.Created;
+            response.Result = newHotel;
+            return CreatedAtRoute("GetHotel", new { id = response.Result.Id }, response.Result);
         }
 
         [HttpDelete("{id}")]
@@ -72,14 +89,19 @@ namespace HotelManagmentAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteHotelAsync(int id)
         {
-            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var response = new APIResponse<HotelDTO>();
+            var hotel = await _hotelRepo.GetAsync(h => h.Id == id);
             if (hotel == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.AddErrorMessage("Hotel not found");
+                return NotFound(response);
             }
 
-            _db.Hotels.Remove(hotel);
-            await _db.SaveChangesAsync();
+            await _hotelRepo.DeleteAsync(hotel);
+
+            response.StatusCode = HttpStatusCode.NoContent;
+            response.IsSuccess = true;
             return NoContent();
         }
 
@@ -89,16 +111,20 @@ namespace HotelManagmentAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] HotelUpdateDTO hotelDto)
         {
-            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var response = new APIResponse<Hotel>();
+            var hotel = await _hotelRepo.GetAsync(h => h.Id == id);
             if (hotel == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.AddErrorMessage("Hotel not found");
+                return NotFound(response);
             }
 
             _mapper.Map(hotelDto, hotel);
-            _db.Hotels.Update(hotel);
-            await _db.SaveChangesAsync();
+            await _hotelRepo.UpdateAsync(hotel);
 
+            response.StatusCode = HttpStatusCode.NoContent;
+            response.IsSuccess = true;
             return NoContent();
         }
 
@@ -107,18 +133,22 @@ namespace HotelManagmentAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] JsonPatchDocument<HotelUpdateDTO> patchDto)
         {
-            var hotel = await _db.Hotels.FirstOrDefaultAsync(h => h.Id == id);
+            var response = new APIResponse<Hotel>();
+            var hotel = await _hotelRepo.GetAsync(h => h.Id == id);
             if (hotel == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                response.AddErrorMessage("Hotel not found");
+                return NotFound(response);
             }
 
             var hotelUpdateDto = _mapper.Map<HotelUpdateDTO>(hotel);
             patchDto.ApplyTo(hotelUpdateDto);
             _mapper.Map(hotelUpdateDto, hotel);
-            _db.Hotels.Update(hotel);
-            await _db.SaveChangesAsync();
+            await _hotelRepo.UpdateAsync(hotel);
 
+            response.StatusCode = HttpStatusCode.NoContent;
+            response.IsSuccess = true;
             return NoContent();
         }
     }
