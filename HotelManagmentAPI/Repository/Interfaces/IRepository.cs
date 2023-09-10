@@ -6,10 +6,15 @@ namespace HotelManagmentAPI.Repository.Interfaces
     {
         Task<List<T>> GetAllAsync(
             Expression<Func<T, bool>>? filter = null,
+            Expression<Func<T, object>>? includeProperties = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            bool isTracked = true);
+            bool isTracked = true
+        );
 
-        Task<T?> GetAsync(Expression<Func<T, bool>>? filter = null);
+        Task<T?> GetAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Expression<Func<T, object>>? includeProperties = null
+        );
 
         Task AddAsync(T entity);
 

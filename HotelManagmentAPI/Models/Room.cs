@@ -13,9 +13,12 @@ namespace HotelManagmentAPI.Models
 
         public bool IsAvailable { get; set; }
 
+        public DateTime CreatedDate { get; set; }
+
         [ForeignKey(nameof(Hotel))]
         public int HotelId { get; set; }
 
         public Hotel Hotel { get; set; }
+
     }
 }

@@ -24,5 +24,7 @@ namespace HotelManagmentAPI.Models
         public string Email { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
+        public List<Room> Rooms { get; set; }
     }
 }

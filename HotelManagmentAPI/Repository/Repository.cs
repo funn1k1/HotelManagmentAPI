@@ -30,14 +30,21 @@ namespace HotelManagmentAPI.Repository
 
         public async Task<List<T>> GetAllAsync(
             Expression<Func<T, bool>>? filter = null,
+            Expression<Func<T, object>>? includeProperties = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            bool isTracked = true)
+            bool isTracked = true
+        )
         {
             IQueryable<T> query = _dbSet.AsQueryable();
 
             if (!isTracked)
             {
                 query = query.AsNoTracking();
+            }
+
+            if (includeProperties != null)
+            {
+                query = query.Include(includeProperties);
             }
 
             if (filter != null)
@@ -53,9 +60,17 @@ namespace HotelManagmentAPI.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<T?> GetAsync(Expression<Func<T, bool>>? filter = null)
+        public async Task<T?> GetAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Expression<Func<T, object>>? includeProperties = null
+        )
         {
             IQueryable<T> query = _dbSet.AsQueryable();
+
+            if (includeProperties != null)
+            {
+                query = query.Include(includeProperties);
+            }
 
             if (filter != null)
             {

@@ -21,5 +21,7 @@ namespace HotelManagmentAPI.Models.DTO.Hotel
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }
+
+        public List<Models.Room> Rooms { get; set; }
     }
 }
