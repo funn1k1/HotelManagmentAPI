@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace HotelManagmentAPI.Migrations
+namespace HotelManagment_API.Migrations
 {
     /// <inheritdoc />
     public partial class AddHotelsTable : Migration

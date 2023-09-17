@@ -1,7 +1,7 @@
-﻿using HotelManagmentAPI.Models;
+﻿using HotelManagment_API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelManagmentAPI.Data
+namespace HotelManagment_API.Data
 {
     public class ApplicationDbContext : DbContext
     {

@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HotelManagmentAPI.Models.DTO.Hotel
+namespace HotelManagment_API.Models.DTO.Hotel
 {
     public class HotelUpdateDTO
     {
-        [Required]
         [MaxLength(50)]
         public string Name { get; set; }
 

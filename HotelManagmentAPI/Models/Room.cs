@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
-namespace HotelManagmentAPI.Models
+namespace HotelManagment_API.Models
 {
     public class Room
     {

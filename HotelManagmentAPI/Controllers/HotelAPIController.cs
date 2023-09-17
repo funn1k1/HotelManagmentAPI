@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using AutoMapper;
-using HotelManagmentAPI.Models;
-using HotelManagmentAPI.Models.DTO.Hotel;
-using HotelManagmentAPI.Repository.Interfaces;
+using HotelManagment_API.Models;
+using HotelManagment_API.Models.DTO.Hotel;
+using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagmentAPI.Controllers
+namespace HotelManagment_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -38,7 +38,7 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status404NotFound),
             ProducesResponseType(StatusCodes.Status200OK)
         ]
-        public async Task<ActionResult<HotelDTO>> GetHotelAsync(int id)
+        public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelAsync(int id)
         {
             var response = new APIResponse<HotelDTO>();
             var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
@@ -60,7 +60,7 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status404NotFound),
             ProducesResponseType(StatusCodes.Status200OK)
         ]
-        public async Task<ActionResult<HotelDTO>> GetHotelByNameAsync(string name)
+        public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelByNameAsync(string name)
         {
             var response = new APIResponse<HotelDTO>();
             var hotel = await _hotelRepo.GetAsync(h => h.Name.ToLower() == name.ToLower(), includeProperties: h => h.Rooms);
@@ -122,6 +122,7 @@ namespace HotelManagmentAPI.Controllers
 
             await _hotelRepo.DeleteAsync(hotel);
 
+            response.Result = _mapper.Map<HotelDTO>(hotel);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
             return NoContent();
@@ -148,7 +149,7 @@ namespace HotelManagmentAPI.Controllers
             response.Result = _mapper.Map<HotelDTO>(hotel);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
 
         [HttpPatch("{id:int}")]
@@ -173,7 +174,7 @@ namespace HotelManagmentAPI.Controllers
             response.Result = _mapper.Map<HotelDTO>(hotel);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
     }
 }

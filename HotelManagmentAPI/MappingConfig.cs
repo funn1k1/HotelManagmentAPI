@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using HotelManagmentAPI.Models;
-using HotelManagmentAPI.Models.DTO.Hotel;
-using HotelManagmentAPI.Models.DTO.Room;
+using HotelManagment_API.Models;
+using HotelManagment_API.Models.DTO.Hotel;
+using HotelManagment_API.Models.DTO.Room;
 
-namespace HotelManagmentAPI
+namespace HotelManagment_API
 {
-    public class MappingProfiles : Profile
+    public class MappingConfig : Profile
     {
-        public MappingProfiles()
+        public MappingConfig()
         {
             // Hotel models
             CreateMap<Hotel, HotelDTO>();

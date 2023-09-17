@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using HotelManagmentAPI.Models.DTO.Hotel;
 
-namespace HotelManagmentAPI
+namespace HotelManagment_API
 {
     public class APIResponse<T>
     {
@@ -34,11 +33,6 @@ namespace HotelManagmentAPI
         public void AddErrorMessage(string message)
         {
             ErrorMessages.Add(message);
-        }
-
-        public static implicit operator APIResponse<T>(APIResponse<List<HotelDTO>> v)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HotelManagmentAPI.Models
+namespace HotelManagment_API.Models
 {
     public class Hotel
     {

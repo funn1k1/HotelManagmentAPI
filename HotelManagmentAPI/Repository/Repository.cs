@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
-using HotelManagmentAPI.Data;
-using HotelManagmentAPI.Repository.Interfaces;
+using HotelManagment_API.Data;
+using HotelManagment_API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace HotelManagmentAPI.Repository
+namespace HotelManagment_API.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
@@ -90,7 +90,6 @@ namespace HotelManagmentAPI.Repository
             {
                 throw new Exception("Error when saving data", ex);
             }
-            await _db.SaveChangesAsync();
         }
     }
 }

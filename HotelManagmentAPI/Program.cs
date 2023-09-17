@@ -1,19 +1,20 @@
-using HotelManagmentAPI;
-using HotelManagmentAPI.Data;
-using HotelManagmentAPI.Repository;
-using HotelManagmentAPI.Repository.Interfaces;
+using HotelManagment_API;
+using HotelManagment_API.Data;
+using HotelManagment_API.Repository;
+using HotelManagment_API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+builder.Services.AddCors();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
 );
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddAutoMapper(typeof(MappingProfiles));
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddControllers(options =>
 {
@@ -28,6 +29,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseCors();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

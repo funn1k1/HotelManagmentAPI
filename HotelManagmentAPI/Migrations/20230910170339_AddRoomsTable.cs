@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace HotelManagmentAPI.Migrations
+namespace HotelManagment_API.Migrations
 {
     /// <inheritdoc />
     public partial class AddRoomsTable : Migration

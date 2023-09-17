@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using AutoMapper;
-using HotelManagmentAPI.Models;
-using HotelManagmentAPI.Models.DTO.Room;
-using HotelManagmentAPI.Repository.Interfaces;
+using HotelManagment_API.Models;
+using HotelManagment_API.Models.DTO.Room;
+using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagmentAPI.Controllers
+namespace HotelManagment_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -45,7 +45,7 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status404NotFound),
             ProducesResponseType(StatusCodes.Status200OK)
         ]
-        public async Task<ActionResult<RoomDTO>> GetRoomAsync(int id)
+        public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(int id)
         {
             var response = new APIResponse<RoomDTO>();
             var room = await _roomRepo.GetAsync(
@@ -70,7 +70,7 @@ namespace HotelManagmentAPI.Controllers
             ProducesResponseType(StatusCodes.Status404NotFound),
             ProducesResponseType(StatusCodes.Status200OK)
         ]
-        public async Task<ActionResult<RoomDTO>> GetRoomAsync(string roomNumber, int hotelId)
+        public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(string roomNumber, int hotelId)
         {
             var response = new APIResponse<RoomDTO>();
             var room = await _roomRepo.GetAsync(

@@ -1,8 +1,8 @@
-﻿using HotelManagmentAPI.Data;
-using HotelManagmentAPI.Models;
-using HotelManagmentAPI.Repository.Interfaces;
+﻿using HotelManagment_API.Data;
+using HotelManagment_API.Models;
+using HotelManagment_API.Repository.Interfaces;
 
-namespace HotelManagmentAPI.Repository
+namespace HotelManagment_API.Repository
 {
     public class HotelRepository : Repository<Hotel>, IHotelRepository
     {
