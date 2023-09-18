@@ -4,14 +4,14 @@ namespace HotelManagment_MVC.Services.Interfaces
 {
     public interface IHotelService
     {
-        Task<APIResponse<string>> GetAllAsync();
+        Task<APIResponse<T>> GetAllAsync<T>();
 
-        Task<APIResponse<string>> GetAsync(int id);
+        Task<APIResponse<T>> GetAsync<T, K>(K id);
 
-        Task<APIResponse<string>> CreateAsync(HotelCreateDTO hotelCreateDto);
+        Task<APIResponse<T>> CreateAsync<T, K>(K hotelDto);
 
-        Task<APIResponse<string>> UpdateAsync(HotelUpdateDTO hotelUpdateDto);
+        Task<APIResponse<T>> UpdateAsync<T, K>(K hotelDto) where K : HotelUpdateDTO;
 
-        Task<APIResponse<string>> DeleteAsync(int id);
+        Task<APIResponse<T>> DeleteAsync<T, K>(K id);
     }
 }

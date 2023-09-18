@@ -1,7 +1,7 @@
-﻿using HotelManagment_MVC.Models.DTO.Hotel;
+﻿using HotelManagment_MVC.Models;
+using HotelManagment_MVC.Models.DTO.Hotel;
 using HotelManagment_MVC.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace HotelManagment_MVC.Controllers
 {
@@ -16,19 +16,13 @@ namespace HotelManagment_MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var response = await _hotelService.GetAllAsync();
+            var response = await _hotelService.GetAllAsync<List<HotelDTO>>();
             if (!response.IsSuccess)
             {
                 return View(new List<HotelDTO>());
             }
 
-            var getResponse = JsonConvert.DeserializeObject<APIResponse<List<HotelDTO>>>(response.Result) ?? new APIResponse<List<HotelDTO>>();
-            if (!getResponse.IsSuccess)
-            {
-                return View(new List<HotelDTO>());
-            }
-
-            return View(getResponse.Result);
+            return View(response.Result);
         }
 
         public IActionResult Create()
@@ -39,11 +33,10 @@ namespace HotelManagment_MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(HotelCreateDTO hotelCreateDto)
         {
-            var response = await _hotelService.CreateAsync(hotelCreateDto);
-            var putResponse = JsonConvert.DeserializeObject<APIResponse<List<HotelDTO>>>(response.Result);
-            if (!putResponse.IsSuccess)
+            var response = await _hotelService.CreateAsync<List<Hotel>, HotelCreateDTO>(hotelCreateDto);
+            if (!response.IsSuccess)
             {
-                AddModelErrors(putResponse.ErrorMessages);
+                AddModelErrors(response.ErrorMessages);
                 return View(hotelCreateDto);
             }
 
@@ -52,25 +45,23 @@ namespace HotelManagment_MVC.Controllers
 
         public async Task<IActionResult> Update(int id)
         {
-            var response = await _hotelService.GetAsync(id);
-            var getResponse = JsonConvert.DeserializeObject<APIResponse<HotelUpdateDTO>>(response.Result) ?? new APIResponse<HotelUpdateDTO>();
-            if (!getResponse.IsSuccess)
+            var response = await _hotelService.GetAsync<HotelUpdateDTO, int>(id);
+            if (!response.IsSuccess)
             {
-                AddModelErrors(getResponse.ErrorMessages);
+                AddModelErrors(response.ErrorMessages);
                 return View();
             }
 
-            return View(getResponse.Result);
+            return View(response.Result);
         }
 
         [HttpPost]
         public async Task<IActionResult> Update(HotelUpdateDTO hotelUpdateDto)
         {
-            var response = await _hotelService.UpdateAsync(hotelUpdateDto);
-            var getResponse = JsonConvert.DeserializeObject<APIResponse<HotelUpdateDTO>>(response.Result) ?? new APIResponse<HotelUpdateDTO>();
-            if (!getResponse.IsSuccess)
+            var response = await _hotelService.UpdateAsync<HotelDTO, HotelUpdateDTO>(hotelUpdateDto);
+            if (!response.IsSuccess)
             {
-                AddModelErrors(getResponse.ErrorMessages);
+                AddModelErrors(response.ErrorMessages);
                 return View(hotelUpdateDto);
             }
 
@@ -79,24 +70,23 @@ namespace HotelManagment_MVC.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var response = await _hotelService.GetAsync(id);
-            var getResponse = JsonConvert.DeserializeObject<APIResponse<HotelDTO>>(response.Result) ?? new APIResponse<HotelDTO>();
-            if (!getResponse.IsSuccess)
+            var response = await _hotelService.GetAsync<HotelDTO, int>(id);
+            if (!response.IsSuccess)
             {
-                AddModelErrors(getResponse.ErrorMessages);
+                AddModelErrors(response.ErrorMessages);
                 return View();
             }
 
-            return View(getResponse.Result);
+            return View(response.Result);
         }
 
         [HttpPost]
         public async Task<IActionResult> PostDelete(int id)
         {
-            var deleteResponse = await _hotelService.DeleteAsync(id);
-            if (!deleteResponse.IsSuccess)
+            var response = await _hotelService.DeleteAsync<HotelDTO, int>(id);
+            if (!response.IsSuccess)
             {
-                AddModelErrors(deleteResponse.ErrorMessages);
+                AddModelErrors(response.ErrorMessages);
                 return View();
             }
 

@@ -123,9 +123,9 @@ namespace HotelManagment_API.Controllers
             await _hotelRepo.DeleteAsync(hotel);
 
             response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
 
         [HttpPut("{id:int}")]
@@ -147,7 +147,7 @@ namespace HotelManagment_API.Controllers
             await _hotelRepo.UpdateAsync(hotel);
 
             response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Ok(response);
         }
@@ -172,7 +172,7 @@ namespace HotelManagment_API.Controllers
             await _hotelRepo.UpdateAsync(hotel);
 
             response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Ok(response);
         }

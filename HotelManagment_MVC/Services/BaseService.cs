@@ -16,44 +16,44 @@ namespace HotelManagment_MVC.Services
             _logger = logger;
         }
 
-        public async Task<APIResponse<string>> SendAsync<T>(APIRequest<T> apiRequest)
+        public async Task<APIResponse<T>> SendAsync<T, K>(APIRequest<K> apiRequest)
         {
             try
             {
                 var httpClient = _httlClientFactory.CreateClient("HotelManagment_API");
 
-                var httpRequest = new HttpRequestMessage();
-                SetRequestUrl(httpRequest, apiRequest);
-                SetHttpMethod(httpRequest, apiRequest);
-                SetRequestHeader(httpRequest, apiRequest, "Accept");
+                var httpReqMess = new HttpRequestMessage();
+                SetRequestUrl(httpReqMess, apiRequest);
+                SetHttpMethod(httpReqMess, apiRequest);
+                SetRequestHeader(httpReqMess, apiRequest, "Accept");
                 if (apiRequest.Data != null)
                 {
-                    SetRequestContent(httpRequest, JsonConvert.SerializeObject(apiRequest.Data), Encoding.Unicode, "application/json");
+                    SetRequestContent(httpReqMess, JsonConvert.SerializeObject(apiRequest.Data), Encoding.Unicode, "application/json");
                 }
 
-                var httpResponse = await httpClient.SendAsync(httpRequest);
+                var httpRespMess = await httpClient.SendAsync(httpReqMess);
 
-                var apiResponse = new APIResponse<string>();
-                apiResponse.StatusCode = httpResponse.StatusCode;
-                if (httpResponse.IsSuccessStatusCode)
+                var response = new APIResponse<T>();
+                response.StatusCode = httpRespMess.StatusCode;
+                if (httpRespMess.IsSuccessStatusCode)
                 {
-                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-                    apiResponse.Result = responseContent;
-                    apiResponse.IsSuccess = true;
+                    var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
+                    response.Result = apiResponse.Result;
+                    response.IsSuccess = true;
                 }
                 else
                 {
-                    apiResponse.IsSuccess = false;
-                    var responseContent = await httpResponse.Content.ReadAsStringAsync();
-                    apiResponse.Result = responseContent;
-                    _logger.LogError($"API request failed with statusCode: {apiResponse.StatusCode}");
+                    response.IsSuccess = false;
+                    var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
+                    response.Result = apiResponse.Result;
+                    _logger.LogError($"API request failed with statusCode: {response.StatusCode}");
                 }
-                return apiResponse;
+                return response;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"An error occured while sending the request: {ex.Message}");
-                return new APIResponse<string>
+                return new APIResponse<T>
                 {
                     IsSuccess = false,
                     ErrorMessages = new List<string> { "An error occured while sending the request" }

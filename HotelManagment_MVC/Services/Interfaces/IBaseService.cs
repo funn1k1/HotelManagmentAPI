@@ -2,6 +2,6 @@
 {
     public interface IBaseService
     {
-        Task<APIResponse<string>> SendAsync<T>(APIRequest<T> request);
+        Task<APIResponse<T>> SendAsync<T, K>(APIRequest<K> request);
     }
 }
