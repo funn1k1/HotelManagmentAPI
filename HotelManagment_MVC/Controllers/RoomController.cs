@@ -93,6 +93,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(roomCreateVM);
             }
 
+            TempData["Success"] = "The room has been successfully established";
             return RedirectToAction(nameof(Index));
         }
 
@@ -127,6 +128,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(roomUpdateDto);
             }
 
+            TempData["Success"] = "The room has been successfully updated";
             return RedirectToAction(nameof(Index));
         }
 
@@ -156,6 +158,7 @@ namespace HotelManagment_MVC.Controllers
                 return View("Delete", new RoomDeleteViewModel { Room = new RoomDTO() });
             }
 
+            TempData["Success"] = "The room has been successfully deleted";
             return RedirectToAction(nameof(Index));
         }
 
