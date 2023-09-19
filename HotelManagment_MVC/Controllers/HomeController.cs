@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
 using HotelManagment_MVC.Models;
+using HotelManagment_MVC.Models.DTO.Hotel;
+using HotelManagment_MVC.Services.Interfaces;
+using HotelManagment_MVC.ViewModels.Hotel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagment_MVC.Controllers
@@ -7,15 +10,22 @@ namespace HotelManagment_MVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IHotelService _hotelService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IHotelService hotelService)
         {
             _logger = logger;
+            _hotelService = hotelService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var getHotelsResp = await _hotelService.GetAllAsync<List<HotelDTO>>();
+            var hotelVM = new HotelViewModel
+            {
+                Hotels = getHotelsResp.Result
+            };
+            return View(hotelVM);
         }
 
         public IActionResult Privacy()

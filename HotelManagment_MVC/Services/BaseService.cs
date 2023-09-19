@@ -43,9 +43,10 @@ namespace HotelManagment_MVC.Services
                 }
                 else
                 {
-                    response.IsSuccess = false;
                     var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
+                    response.IsSuccess = false;
                     response.Result = apiResponse.Result;
+                    response.ErrorMessages = apiResponse.ErrorMessages;
                     _logger.LogError($"API request failed with statusCode: {response.StatusCode}");
                 }
                 return response;

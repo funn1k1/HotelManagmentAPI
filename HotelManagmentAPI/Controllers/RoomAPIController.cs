@@ -147,7 +147,7 @@ namespace HotelManagment_API.Controllers
             response.Result = _mapper.Map<RoomDTO>(room);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
 
         [HttpPut("{id:int}")]
@@ -174,7 +174,7 @@ namespace HotelManagment_API.Controllers
             response.Result = _mapper.Map<RoomDTO>(room);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
 
         [HttpPatch("{id:int}")]
@@ -199,7 +199,7 @@ namespace HotelManagment_API.Controllers
             response.Result = _mapper.Map<RoomDTO>(room);
             response.StatusCode = HttpStatusCode.NoContent;
             response.IsSuccess = true;
-            return NoContent();
+            return Ok(response);
         }
     }
 }

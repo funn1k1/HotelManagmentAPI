@@ -1,25 +1,25 @@
-﻿using HotelManagment_MVC.Models.DTO.Hotel;
+﻿using HotelManagment_MVC.Models.DTO.Room;
 using HotelManagment_MVC.Services.Interfaces;
 using HotelManagment_Utility.Enums;
 
 namespace HotelManagment_MVC.Services
 {
-    public class HotelService : BaseService, IHotelService
+    public class RoomService : BaseService, IRoomService
     {
         private readonly string? _apiUrl;
 
-        public HotelService(IConfiguration configuration, IHttpClientFactory httlClientFactory, ILogger<BaseService> logger)
+        public RoomService(IConfiguration configuration, IHttpClientFactory httlClientFactory, ILogger<BaseService> logger)
             : base(httlClientFactory, logger)
         {
             _apiUrl = $"{configuration.GetValue<string>("HotelManagment_API:Domain")}/" +
-                $"{configuration.GetValue<string>("HotelManagment_API:HotelAPIUrl")}";
+                $"{configuration.GetValue<string>("HotelManagment_API:RoomApiUrl")}";
         }
 
-        public async Task<APIResponse<T>> CreateAsync<T, K>(K hotelDto)
+        public async Task<APIResponse<T>> CreateAsync<T, K>(K roomDto)
         {
             var apiRequest = new APIRequest<K>()
             {
-                Data = hotelDto,
+                Data = roomDto,
                 Method = APIHttpMethod.POST,
                 Headers = new Dictionary<string, string>
                 {
@@ -72,17 +72,17 @@ namespace HotelManagment_MVC.Services
             return await SendAsync<T, K>(apiRequest);
         }
 
-        public async Task<APIResponse<T>> UpdateAsync<T, K>(K hotelDto) where K : HotelUpdateDTO
+        public async Task<APIResponse<T>> UpdateAsync<T, K>(K roomDto) where K : RoomUpdateDTO
         {
             var apiRequest = new APIRequest<K>()
             {
-                Data = hotelDto,
+                Data = roomDto,
                 Method = APIHttpMethod.PUT,
                 Headers = new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
                 },
-                Url = $"{_apiUrl}/{hotelDto.Id}"
+                Url = $"{_apiUrl}/{roomDto.Id}"
             };
             return await SendAsync<T, K>(apiRequest);
         }

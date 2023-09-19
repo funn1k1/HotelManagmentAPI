@@ -1,0 +1,29 @@
+﻿@model RoomUpdateViewModel
+
+<div class="row">
+    <h2>Update Room</h2>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Room.Id" hidden />
+        <input asp-for="Room.HotelId" hidden>
+        <div class="mb-3">
+            <label asp-for="Room.RoomNumber" class="form-label"></label>
+            <input asp-for="Room.RoomNumber" class="form-control">
+            <span asp-validation-for="Room.RoomNumber" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Room.PricePerNight" class="form-label"></label>
+            <input asp-for="Room.PricePerNight" class="form-control">
+            <span asp-validation-for="Room.PricePerNight" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Room.IsAvailable" class="form-check-label"></label>
+            <input asp-for="Room.IsAvailable" class="form-check-input">
+            <span asp-validation-for="Room.IsAvailable" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

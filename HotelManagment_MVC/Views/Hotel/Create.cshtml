@@ -1,44 +1,44 @@
-﻿@model HotelCreateDTO
+﻿@model HotelCreateViewModel
 
 <div class="row">
     <h2>Create Hotel</h2>
     <form method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="mb-3">
-            <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control">
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <label asp-for="Hotel.Name" class="form-label"></label>
+            <input asp-for="Hotel.Name" class="form-control">
+            <span asp-validation-for="Hotel.Name" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="ImageUrl" class="form-label"></label>
-            <input asp-for="ImageUrl" class="form-control">
-            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            <label asp-for="Hotel.ImageUrl" class="form-label"></label>
+            <input asp-for="Hotel.ImageUrl" class="form-control">
+            <span asp-validation-for="Hotel.ImageUrl" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Address" class="form-label"></label>
-            <input asp-for="Address" class="form-control">
-            <span asp-validation-for="Address" class="text-danger"></span>
+            <label asp-for="Hotel.Address" class="form-label"></label>
+            <input asp-for="Hotel.Address" class="form-control">
+            <span asp-validation-for="Hotel.Address" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control">
+            <label asp-for="Hotel.Description" class="form-label"></label>
+            <textarea asp-for="Hotel.Description" class="form-control">
             </textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
+            <span asp-validation-for="Hotel.Description" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="PhoneNumber" class="form-label"></label>
-            <input asp-for="PhoneNumber" class="form-control">
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            <label asp-for="Hotel.PhoneNumber" class="form-label"></label>
+            <input asp-for="Hotel.PhoneNumber" class="form-control">
+            <span asp-validation-for="Hotel.PhoneNumber" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Rating" class="form-label"></label>
-            <input asp-for="Rating" class="form-control">
-            <span asp-validation-for="Rating" class="text-danger"></span>
+            <label asp-for="Hotel.Rating" class="form-label"></label>
+            <input asp-for="Hotel.Rating" class="form-control">
+            <span asp-validation-for="Hotel.Rating" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control">
-            <span asp-validation-for="Email" class="text-danger"></span>
+            <label asp-for="Hotel.Email" class="form-label"></label>
+            <input asp-for="Hotel.Email" class="form-control">
+            <span asp-validation-for="Hotel.Email" class="text-danger"></span>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

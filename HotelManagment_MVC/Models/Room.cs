@@ -18,6 +18,5 @@ namespace HotelManagment_MVC.Models
         public int HotelId { get; set; }
 
         public Hotel Hotel { get; set; }
-
     }
 }

@@ -1,24 +1,24 @@
-﻿@model IEnumerable<HotelDTO>
+﻿@model HotelViewModel
 
 <div class="d-flex justify-content-between mb-3">
     <h2>Hotels</h2>
     <div>
-        <a asp-action="Create" class="btn btn-success">Create hotel</a>
+        <a asp-action="Create" class="btn btn-success">Create Hotel</a>
     </div>
 </div>
 
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
-            <th scope="col">@Html.DisplayNameFor(h => h.Name)</th>
-            <th scope="col">@Html.DisplayNameFor(h => h.Address)</th>
-            <th scope="col">@Html.DisplayNameFor(h => h.Rating)</th>
-            <th scope="col">@Html.DisplayNameFor(h => h.Email)</th>
+            <th scope="col">Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Email</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var hotel in Model)
+        @foreach (var hotel in Model.Hotels)
         {
             <tr>
                 <td>@hotel.Name</td>

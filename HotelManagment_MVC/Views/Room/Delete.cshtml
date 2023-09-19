@@ -1,0 +1,25 @@
+﻿@model RoomDeleteViewModel
+
+<div class="row">
+    <h2>Delete Room</h2>
+    <form method="post" asp-action="PostDelete" asp-route-id="@Model.Room.Id">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Room.RoomNumber" class="form-label"></label>
+            <input asp-for="Room.RoomNumber" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Room.Hotel.Name" class="form-label"></label>
+            <input asp-for="Room.Hotel.Name" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Room.PricePerNight" class="form-label"></label>
+            <input asp-for="Room.PricePerNight" class="form-control" readonly>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Room.IsAvailable" class="form-check-label"></label>
+            <input asp-for="Room.IsAvailable" class="form-check-input" disabled>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
