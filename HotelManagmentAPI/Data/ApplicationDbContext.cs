@@ -11,6 +11,8 @@ namespace HotelManagment_API.Data
 
         public DbSet<Room> Rooms { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var hotels = new List<Hotel>

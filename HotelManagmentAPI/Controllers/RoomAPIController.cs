@@ -28,6 +28,7 @@ namespace HotelManagment_API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync()
         {
             var response = new APIResponse<List<RoomDTO>>
@@ -42,8 +43,8 @@ namespace HotelManagment_API.Controllers
 
         [HttpGet("{id:int}", Name = "GetRoom")]
         [
+            ProducesResponseType(StatusCodes.Status200OK),
             ProducesResponseType(StatusCodes.Status404NotFound),
-            ProducesResponseType(StatusCodes.Status200OK)
         ]
         public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(int id)
         {
@@ -67,8 +68,8 @@ namespace HotelManagment_API.Controllers
 
         [HttpGet("{roomNumber}/hotels/{hotelId}", Name = "GetRoomByNumber")]
         [
-            ProducesResponseType(StatusCodes.Status404NotFound),
-            ProducesResponseType(StatusCodes.Status200OK)
+            ProducesResponseType(StatusCodes.Status200OK),
+            ProducesResponseType(StatusCodes.Status404NotFound)
         ]
         public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(string roomNumber, int hotelId)
         {

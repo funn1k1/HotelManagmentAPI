@@ -3,6 +3,7 @@ using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Hotel;
 using HotelManagment_API.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +22,9 @@ namespace HotelManagment_API.Controllers
             _hotelRepo = hotelRepo;
         }
 
+        [Authorize]
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync()
         {
             var response = new APIResponse<List<HotelDTO>>
@@ -33,10 +36,13 @@ namespace HotelManagment_API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("{id:int}", Name = "GetHotel")]
         [
+            ProducesResponseType(StatusCodes.Status200OK),
+            ProducesResponseType(StatusCodes.Status401Unauthorized),
+            ProducesResponseType(StatusCodes.Status403Forbidden),
             ProducesResponseType(StatusCodes.Status404NotFound),
-            ProducesResponseType(StatusCodes.Status200OK)
         ]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelAsync(int id)
         {
@@ -55,10 +61,11 @@ namespace HotelManagment_API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{name}", Name = "GetHotelByName")]
         [
+            ProducesResponseType(StatusCodes.Status200OK),
             ProducesResponseType(StatusCodes.Status404NotFound),
-            ProducesResponseType(StatusCodes.Status200OK)
         ]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelByNameAsync(string name)
         {

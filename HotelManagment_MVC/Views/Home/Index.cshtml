@@ -3,17 +3,21 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    @foreach (var hotel in Model.Hotels)
-    {
-        <div class="col h-100">
-            <div class="card h-100">
-                <img src="@hotel.ImageUrl" class="card-img-top" alt="@hotel.Name">
-                <div class="card-body">
-                    <h5 class="card-title">@hotel.Name</h5>
-                    <p class="card-text">@hotel.Description</p>
+@if (Model.Hotels != null)
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        @foreach (var hotel in Model.Hotels)
+        {
+            <div class="col h-100">
+                <div class="card h-100">
+                    <img src="@hotel.ImageUrl" class="card-img-top" alt="@hotel.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@hotel.Name</h5>
+                        <p class="card-text">@hotel.Description</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}

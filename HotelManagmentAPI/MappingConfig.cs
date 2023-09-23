@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HotelManagment_API.Models;
+using HotelManagment_API.Models.DTO.Auth.Register;
 using HotelManagment_API.Models.DTO.Hotel;
 using HotelManagment_API.Models.DTO.Room;
 
@@ -18,6 +19,9 @@ namespace HotelManagment_API
             CreateMap<Room, RoomDTO>();
             CreateMap<RoomCreateDTO, Room>();
             CreateMap<Room, RoomUpdateDTO>().ReverseMap();
+
+            // User models
+            CreateMap<RegisterDTO, User>();
         }
     }
 }
