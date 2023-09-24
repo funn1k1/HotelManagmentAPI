@@ -26,10 +26,8 @@ namespace HotelManagment_MVC.Services
                 SetRequestUrl(httpReqMess, apiRequest);
                 SetHttpMethod(httpReqMess, apiRequest);
                 SetRequestHeader(httpReqMess, apiRequest, "Accept");
-                if (apiRequest.Data != null)
-                {
-                    SetRequestContent(httpReqMess, JsonConvert.SerializeObject(apiRequest.Data), Encoding.Unicode, "application/json");
-                }
+                SetRequestHeader(httpReqMess, apiRequest, "Authorization");
+                SetRequestContent(httpReqMess, apiRequest);
 
                 var httpRespMess = await httpClient.SendAsync(httpReqMess);
 
@@ -39,14 +37,20 @@ namespace HotelManagment_MVC.Services
                 {
                     var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
                     response.Result = apiResponse.Result;
-                    response.IsSuccess = true;
+                    response.IsSuccess = httpRespMess.IsSuccessStatusCode;
                 }
                 else
                 {
                     var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
-                    response.IsSuccess = false;
-                    response.Result = apiResponse.Result;
-                    response.ErrorMessages = apiResponse.ErrorMessages;
+                    if (apiResponse != null)
+                    {
+                        response.Result = apiResponse.Result;
+                        response.ErrorMessages = apiResponse.ErrorMessages;
+                    }
+                    else
+                    {
+                        response.AddErrorMessage($"API request failed with statusCode: {response.StatusCode}");
+                    }
                     _logger.LogError($"API request failed with statusCode: {response.StatusCode}");
                 }
                 return response;
@@ -89,19 +93,25 @@ namespace HotelManagment_MVC.Services
             }
         }
 
-        private void SetRequestHeader<K>(HttpRequestMessage httpRequest, APIRequest<K> apiRequest, string headerName)
-        {
-            httpRequest.Headers.Add(headerName, apiRequest.Headers[headerName]);
-        }
-
-        private void SetRequestContent(
+        private void SetRequestHeader<K>(
             HttpRequestMessage httpRequest,
-            string content,
-            Encoding encoding,
-            string mediaType
+            APIRequest<K> apiRequest,
+            string headerName
         )
         {
-            httpRequest.Content = new StringContent(content, encoding, mediaType);
+            if (apiRequest.Headers.TryGetValue(headerName, out var headerValue))
+            {
+                httpRequest.Headers.Add(headerName, headerValue);
+            }
+        }
+
+        private void SetRequestContent<K>(HttpRequestMessage httpRequest, APIRequest<K> apiRequest)
+        {
+            httpRequest.Content = new StringContent(
+                JsonConvert.SerializeObject(apiRequest.Data),
+                Encoding.Unicode,
+                "application/json"
+            );
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace HotelManagment_API.Models.DTO.Auth.Login
+﻿namespace HotelManagment_API.Models.DTO.Account
 {
     public class LoginDTO
     {

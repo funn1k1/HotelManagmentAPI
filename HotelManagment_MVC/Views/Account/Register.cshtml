@@ -1,0 +1,35 @@
+﻿@model RegisterViewModel
+
+<div class="row">
+    <h2>Sign up Account</h2>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Account.FullName" class="form-label"></label>
+            <input asp-for="Account.FullName" class="form-control">
+            <span asp-validation-for="Account.FullName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Account.Role" class="form-label"></label>
+            <select asp-for="Account.Role" asp-items="@Model.Account.Roles" class="form-control">
+                <option selected disabled>Select Role</option>
+            </select>
+            <span asp-validation-for="Account.Role" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Account.UserName" class="form-label"></label>
+            <input asp-for="Account.UserName" class="form-control">
+            <span asp-validation-for="Account.UserName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Account.Password" class="form-label"></label>
+            <input asp-for="Account.Password" class="form-control">
+            <span asp-validation-for="Account.Password" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Register</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

@@ -3,6 +3,8 @@ using HotelManagment_MVC.Models.DTO.Hotel;
 using HotelManagment_MVC.Models.DTO.Room;
 using HotelManagment_MVC.Services.Interfaces;
 using HotelManagment_MVC.ViewModels.Room;
+using HotelManagment_Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -34,6 +36,7 @@ namespace HotelManagment_MVC.Controllers
             return View(roomVM);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             var getHotelsResp = await _hotelService.GetAllAsync<List<HotelDTO>>();
@@ -55,7 +58,9 @@ namespace HotelManagment_MVC.Controllers
             return View(roomCreateVM);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoomCreateViewModel roomCreateVM)
         {
             if (!ModelState.IsValid)
@@ -81,7 +86,8 @@ namespace HotelManagment_MVC.Controllers
                 return View(roomCreateVM);
             }
 
-            var createRoomResp = await _roomService.CreateAsync<List<Room>, RoomCreateDTO>(roomCreateVM.Room);
+            var token = HttpContext.Session.GetString(Constants.JwtToken);
+            var createRoomResp = await _roomService.CreateAsync<List<Room>, RoomCreateDTO>(roomCreateVM.Room, token);
             if (!createRoomResp.IsSuccess)
             {
                 roomCreateVM.Hotels = getRoomsResp.Result.Select(h => new SelectListItem
@@ -97,6 +103,7 @@ namespace HotelManagment_MVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
             var getRoomResp = await _roomService.GetAsync<RoomUpdateDTO, int>(id);
@@ -113,25 +120,29 @@ namespace HotelManagment_MVC.Controllers
             return View(updateRoomVM);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> Update(RoomUpdateDTO roomUpdateDto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(RoomUpdateViewModel roomUpdateVM)
         {
             if (!ModelState.IsValid)
             {
-                return View(roomUpdateDto);
+                return View(roomUpdateVM);
             }
 
-            var updateRoomResp = await _roomService.UpdateAsync<RoomDTO, RoomUpdateDTO>(roomUpdateDto);
+            var token = HttpContext.Session.GetString(Constants.JwtToken);
+            var updateRoomResp = await _roomService.UpdateAsync<RoomDTO, RoomUpdateDTO>(roomUpdateVM.Room, token);
             if (!updateRoomResp.IsSuccess)
             {
                 AddModelErrors(updateRoomResp.ErrorMessages);
-                return View(roomUpdateDto);
+                return View(roomUpdateVM);
             }
 
             TempData["Success"] = "The room has been successfully updated";
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var getRoomResp = await _roomService.GetAsync<RoomDTO, int>(id);
@@ -148,10 +159,13 @@ namespace HotelManagment_MVC.Controllers
             return View(roomDeleteVM);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
         {
-            var deleteRoomResp = await _roomService.DeleteAsync<RoomDTO, int>(id);
+            var token = HttpContext.Session.GetString(Constants.JwtToken);
+            var deleteRoomResp = await _roomService.DeleteAsync<RoomDTO, int>(id, token);
             if (!deleteRoomResp.IsSuccess)
             {
                 AddModelErrors(deleteRoomResp.ErrorMessages);

@@ -8,29 +8,33 @@ namespace HotelManagment_MVC.Services
     {
         private readonly string? _apiUrl;
 
-        public HotelService(IConfiguration configuration, IHttpClientFactory httlClientFactory, ILogger<BaseService> logger)
-            : base(httlClientFactory, logger)
+        public HotelService(
+            IConfiguration configuration,
+            IHttpClientFactory httlClientFactory,
+            ILogger<BaseService> logger
+        ) : base(httlClientFactory, logger)
         {
             _apiUrl = $"{configuration.GetValue<string>("HotelManagment_API:Domain")}/" +
                 $"{configuration.GetValue<string>("HotelManagment_API:HotelAPIUrl")}";
         }
 
-        public async Task<APIResponse<T>> CreateAsync<T, K>(K hotelDto)
+        public async Task<APIResponse<T>> CreateAsync<T, K>(K entity, string token)
         {
             var apiRequest = new APIRequest<K>()
             {
-                Data = hotelDto,
+                Data = entity,
                 Method = APIHttpMethod.POST,
                 Headers = new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
+                    { "Authorization", "Bearer " + token }
                 },
                 Url = $"{_apiUrl}"
             };
             return await SendAsync<T, K>(apiRequest);
         }
 
-        public async Task<APIResponse<T>> DeleteAsync<T, K>(K id)
+        public async Task<APIResponse<T>> DeleteAsync<T, K>(K id, string token)
         {
             var apiRequest = new APIRequest<K>()
             {
@@ -38,6 +42,7 @@ namespace HotelManagment_MVC.Services
                 Headers = new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
+                    { "Authorization", "Bearer " + token }
                 },
                 Url = $"{_apiUrl}/{id}"
             };
@@ -72,17 +77,18 @@ namespace HotelManagment_MVC.Services
             return await SendAsync<T, K>(apiRequest);
         }
 
-        public async Task<APIResponse<T>> UpdateAsync<T, K>(K hotelDto) where K : HotelUpdateDTO
+        public async Task<APIResponse<T>> UpdateAsync<T, K>(K entity, string token) where K : HotelUpdateDTO
         {
             var apiRequest = new APIRequest<K>()
             {
-                Data = hotelDto,
+                Data = entity,
                 Method = APIHttpMethod.PUT,
                 Headers = new Dictionary<string, string>
                 {
                     { "Accept", "application/json" },
+                    { "Authorization", "Bearer " + token }
                 },
-                Url = $"{_apiUrl}/{hotelDto.Id}"
+                Url = $"{_apiUrl}/{entity.Id}"
             };
             return await SendAsync<T, K>(apiRequest);
         }

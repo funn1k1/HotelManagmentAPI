@@ -4,8 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using HotelManagment_API.Models;
-using HotelManagment_API.Models.DTO.Auth.Login;
-using HotelManagment_API.Models.DTO.Auth.Register;
+using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,13 +13,13 @@ namespace HotelManagment_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserAPIController : ControllerBase
+    public class AccountAPIController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UserAPIController(IUserRepository userRepo, IMapper mapper, IConfiguration configuration)
+        public AccountAPIController(IUserRepository userRepo, IMapper mapper, IConfiguration configuration)
         {
             _userRepo = userRepo;
             _mapper = mapper;
@@ -32,12 +31,11 @@ namespace HotelManagment_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisterAsync(RegisterDTO registerDto)
         {
-            var apiResponse = new APIResponse<bool>();
+            var apiResponse = new APIResponse<User>();
             var user = await _userRepo.GetAsync(u => u.UserName.ToLower() == registerDto.UserName.ToLower());
             if (user != null)
             {
                 apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                apiResponse.IsSuccess = false;
                 apiResponse.AddErrorMessage("Username already exists");
                 return BadRequest(apiResponse);
             }
@@ -45,7 +43,7 @@ namespace HotelManagment_API.Controllers
             user = _mapper.Map<User>(registerDto);
             await _userRepo.AddAsync(user);
 
-            apiResponse.Result = true;
+            apiResponse.Result = user;
             apiResponse.StatusCode = HttpStatusCode.OK;
             apiResponse.IsSuccess = true;
             return Ok(apiResponse);
@@ -61,7 +59,6 @@ namespace HotelManagment_API.Controllers
             if (user == null)
             {
                 apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                apiResponse.IsSuccess = false;
                 apiResponse.AddErrorMessage("Username or password is incorrect");
                 return BadRequest(apiResponse);
             }
@@ -80,7 +77,7 @@ namespace HotelManagment_API.Controllers
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Role, user.Role)
             };
 

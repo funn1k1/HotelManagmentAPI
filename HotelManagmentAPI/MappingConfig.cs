@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using HotelManagment_API.Models;
-using HotelManagment_API.Models.DTO.Auth.Register;
+using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_API.Models.DTO.Hotel;
 using HotelManagment_API.Models.DTO.Room;
 

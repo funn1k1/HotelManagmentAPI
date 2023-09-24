@@ -1,0 +1,23 @@
+﻿@model LoginViewModel
+
+<div class="row">
+    <h2>Sign in to your Account</h2>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label asp-for="Account.UserName" class="form-label"></label>
+            <input asp-for="Account.UserName" class="form-control">
+            <span asp-validation-for="Account.UserName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Account.Password" class="form-label"></label>
+            <input asp-for="Account.Password" class="form-control">
+            <span asp-validation-for="Account.Password" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Login</button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} 

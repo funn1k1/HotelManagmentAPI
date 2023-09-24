@@ -1,4 +1,4 @@
-﻿namespace HotelManagment_API.Models.DTO.Auth.Register
+﻿namespace HotelManagment_API.Models.DTO.Account
 {
     public class RegisterDTO
     {

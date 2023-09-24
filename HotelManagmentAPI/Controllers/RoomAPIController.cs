@@ -3,6 +3,7 @@ using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Room;
 using HotelManagment_API.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -92,13 +93,12 @@ namespace HotelManagment_API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        [
-            ProducesResponseType(StatusCodes.Status200OK),
-            ProducesResponseType(StatusCodes.Status201Created),
-            ProducesResponseType(StatusCodes.Status400BadRequest),
-            ProducesResponseType(StatusCodes.Status500InternalServerError)
-        ]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateRoomAsync([FromBody] RoomCreateDTO roomDto)
         {
             var response = new APIResponse<Room>();
@@ -129,8 +129,11 @@ namespace HotelManagment_API.Controllers
             return CreatedAtRoute("GetRoom", new { id = response.Result.Id }, response.Result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteRoomAsync(int id)
         {
@@ -151,9 +154,12 @@ namespace HotelManagment_API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateRoomAsync(int id, [FromBody] RoomUpdateDTO roomDto)
         {
@@ -178,7 +184,10 @@ namespace HotelManagment_API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateRoomAsync(int id, [FromBody] JsonPatchDocument<RoomUpdateDTO> patchDto)
