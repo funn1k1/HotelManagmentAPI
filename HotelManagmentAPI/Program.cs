@@ -4,6 +4,9 @@ using HotelManagment_API.Data;
 using HotelManagment_API.Repository;
 using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -73,18 +76,42 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ApiVersionReader = ApiVersionReader.Combine(
+        new UrlSegmentApiVersionReader(),
+        new HeaderApiVersionReader("x-api-version"),
+        new MediaTypeApiVersionReader("x-api-version")
+    );
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 var app = builder.Build();
 
-app.UseCors();
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"https://localhost:7238/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpper());
+        }
+    });
 }
 
 //app.UseSerilogRequestLogging();
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

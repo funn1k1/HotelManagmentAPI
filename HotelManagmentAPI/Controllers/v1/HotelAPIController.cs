@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagment_API.Controllers
+namespace HotelManagment_API.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class HotelAPIController : ControllerBase
     {
@@ -36,12 +37,8 @@ namespace HotelManagment_API.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetHotel")]
-        [
-            ProducesResponseType(StatusCodes.Status200OK),
-            ProducesResponseType(StatusCodes.Status401Unauthorized),
-            ProducesResponseType(StatusCodes.Status403Forbidden),
-            ProducesResponseType(StatusCodes.Status404NotFound),
-        ]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelAsync(int id)
         {
             var response = new APIResponse<HotelDTO>();
@@ -60,10 +57,8 @@ namespace HotelManagment_API.Controllers
         }
 
         [HttpGet("{name}", Name = "GetHotelByName")]
-        [
-            ProducesResponseType(StatusCodes.Status200OK),
-            ProducesResponseType(StatusCodes.Status404NotFound),
-        ]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelByNameAsync(string name)
         {
             var response = new APIResponse<HotelDTO>();
@@ -83,12 +78,10 @@ namespace HotelManagment_API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [
-            ProducesResponseType(StatusCodes.Status200OK),
-            ProducesResponseType(StatusCodes.Status201Created),
-            ProducesResponseType(StatusCodes.Status400BadRequest),
-            ProducesResponseType(StatusCodes.Status500InternalServerError)
-        ]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateHotelAsync([FromBody] HotelCreateDTO hotelDto)
         {
             var response = new APIResponse<Hotel>();
@@ -113,7 +106,7 @@ namespace HotelManagment_API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

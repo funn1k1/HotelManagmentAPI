@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HotelManagment_API.Controllers
+namespace HotelManagment_API.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class RoomAPIController : ControllerBase
     {
@@ -43,10 +44,8 @@ namespace HotelManagment_API.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetRoom")]
-        [
-            ProducesResponseType(StatusCodes.Status200OK),
-            ProducesResponseType(StatusCodes.Status404NotFound),
-        ]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(int id)
         {
             var response = new APIResponse<RoomDTO>();

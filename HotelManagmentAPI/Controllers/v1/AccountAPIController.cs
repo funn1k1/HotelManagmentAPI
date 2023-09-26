@@ -9,9 +9,10 @@ using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace HotelManagment_API.Controllers
+namespace HotelManagment_API.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     public class AccountAPIController : ControllerBase
     {
