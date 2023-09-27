@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagment_API.Controllers.v1
 {
-    [ResponseCache(CacheProfileName = "Cache24Hours")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]
@@ -30,20 +29,23 @@ namespace HotelManagment_API.Controllers.v1
             _hotelRepo = hotelRepo;
         }
 
+        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync()
+        public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync(int pageNumber, int pageSize)
         {
             var response = new APIResponse<List<RoomDTO>>
             {
                 IsSuccess = true,
                 Result = _mapper.Map<List<RoomDTO>>(
-                    await _roomRepo.GetAllAsync(includeProperties: r => r.Hotel)),
+                    await _roomRepo.GetAllAsync(includeProperties: r => r.Hotel, isTracked: false, pageNumber: pageNumber, pageSize: pageSize)
+                ),
                 StatusCode = HttpStatusCode.OK
             };
             return Ok(response);
         }
 
+        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{id:int}", Name = "GetRoom")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,6 +68,8 @@ namespace HotelManagment_API.Controllers.v1
             response.StatusCode = HttpStatusCode.OK;
             return Ok(response);
         }
+
+        [ResponseCache(CacheProfileName = "Cache2Min")]
 
         [HttpGet("{roomNumber}/hotels/{hotelId}", Name = "GetRoomByNumber")]
         [

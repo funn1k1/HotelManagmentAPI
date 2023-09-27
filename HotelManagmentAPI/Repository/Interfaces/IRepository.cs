@@ -8,7 +8,9 @@ namespace HotelManagment_API.Repository.Interfaces
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<T, object>>? includeProperties = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            bool isTracked = true
+            bool isTracked = true,
+            int pageNumber = 0,
+            int pageSize = 0
         );
 
         Task<T?> GetAsync(

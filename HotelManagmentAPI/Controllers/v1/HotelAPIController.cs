@@ -6,10 +6,10 @@ using HotelManagment_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace HotelManagment_API.Controllers.v1
 {
-    [ResponseCache(CacheProfileName = "Cache24Hours")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]
@@ -24,19 +24,29 @@ namespace HotelManagment_API.Controllers.v1
             _hotelRepo = hotelRepo;
         }
 
+        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync()
+        public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync(int pageNumber, int pageSize)
         {
             var response = new APIResponse<List<HotelDTO>>
             {
                 IsSuccess = true,
-                Result = _mapper.Map<List<HotelDTO>>(await _hotelRepo.GetAllAsync(includeProperties: h => h.Rooms)),
+                Result = _mapper.Map<List<HotelDTO>>(
+                    await _hotelRepo.GetAllAsync(includeProperties: h => h.Rooms, isTracked: false, pageNumber: pageNumber, pageSize: pageSize)
+                ),
                 StatusCode = HttpStatusCode.OK
             };
+            var pagination = new
+            {
+                pageNumber,
+                pageSize,
+            };
+            Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination));
             return Ok(response);
         }
 
+        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{id:int}", Name = "GetHotel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -57,6 +67,7 @@ namespace HotelManagment_API.Controllers.v1
             return Ok(response);
         }
 
+        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{name}", Name = "GetHotelByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

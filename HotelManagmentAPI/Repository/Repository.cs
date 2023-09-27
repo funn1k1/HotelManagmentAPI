@@ -32,7 +32,9 @@ namespace HotelManagment_API.Repository
             Expression<Func<T, bool>>? filter = null,
             Expression<Func<T, object>>? includeProperties = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            bool isTracked = true
+            bool isTracked = true,
+            int pageNumber = 0,
+            int pageSize = 0
         )
         {
             IQueryable<T> query = _dbSet.AsQueryable();
@@ -40,6 +42,11 @@ namespace HotelManagment_API.Repository
             if (!isTracked)
             {
                 query = query.AsNoTracking();
+            }
+
+            if (pageSize > 0 && pageNumber > 0)
+            {
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
             }
 
             if (includeProperties != null)
