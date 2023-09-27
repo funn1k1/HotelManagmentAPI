@@ -2,6 +2,7 @@
 
 namespace HotelManagment_API.Controllers.v2
 {
+    [ResponseCache(CacheProfileName = "Cache2Min")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("2.0")]
     [ApiController]
@@ -11,7 +12,8 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetHotelsAsync()
         {
-            return Ok(new List<string> { "Hotel 1", "Hotel 2" });
+            var hotels = new List<string> { "Hotel 1", "Hotel 2" };
+            return Ok(hotels);
         }
     }
 }

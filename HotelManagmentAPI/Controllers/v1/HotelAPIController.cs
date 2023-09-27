@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagment_API.Controllers.v1
 {
+    [ResponseCache(CacheProfileName = "Cache24Hours")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiVersion("1.0")]
     [ApiController]

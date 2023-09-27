@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 builder.Services.AddCors();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -31,18 +32,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 builder.Services.AddAuthorization();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
 );
-
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddControllers(options =>
 {
+    // Add caching
+    var profiles = configuration.GetSection("CacheProfiles").GetChildren();
+    foreach (var profile in profiles)
+    {
+        options.CacheProfiles.Add(profile.Key, profile.Get<CacheProfile>());
+    }
     //options.ReturnHttpNotAcceptable = true;
 }).AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -50,6 +56,7 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+// Add JWT authorization
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -76,6 +83,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+// Add API versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -93,19 +101,25 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+builder.Services.AddResponseCaching();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
+        // Add Swagger endpoints
+        var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
         foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
         {
-            options.SwaggerEndpoint($"https://localhost:7238/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpper());
+            options.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpper()
+            );
         }
     });
 }
@@ -113,7 +127,7 @@ if (app.Environment.IsDevelopment())
 //app.UseSerilogRequestLogging();
 app.UseCors();
 app.UseHttpsRedirection();
-
+app.UseResponseCaching();
 app.UseAuthentication();
 app.UseAuthorization();
 
