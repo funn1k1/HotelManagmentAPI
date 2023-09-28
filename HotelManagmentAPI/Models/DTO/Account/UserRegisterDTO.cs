@@ -1,6 +1,6 @@
 ﻿namespace HotelManagment_API.Models.DTO.Account
 {
-    public class RegisterDTO
+    public class UserRegisterDTO
     {
         public string FullName { get; set; }
 

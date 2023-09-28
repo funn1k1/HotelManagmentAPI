@@ -21,7 +21,7 @@ namespace HotelManagment_API
             CreateMap<Room, RoomUpdateDTO>().ReverseMap();
 
             // User models
-            CreateMap<RegisterDTO, User>();
+            CreateMap<UserRegisterDTO, ApplicationUser>();
         }
     }
 }

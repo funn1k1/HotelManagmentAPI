@@ -1,9 +1,9 @@
-﻿using HotelManagment_MVC.Models.DTO.Account;
+﻿using HotelManagment_API.Models.DTO.Account;
 
 namespace HotelManagment_MVC.ViewModels.Account
 {
     public class RegisterViewModel
     {
-        public RegisterDTO Account { get; set; }
+        public UserRegisterDTO Account { get; set; }
     }
 }

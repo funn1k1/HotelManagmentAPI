@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HotelManagment_MVC.Models.DTO.Account
+namespace HotelManagment_API.Models.DTO.Account
 {
-    public class LoginDTO
+    public class UserLoginDTO
     {
         public string UserName { get; set; }
 

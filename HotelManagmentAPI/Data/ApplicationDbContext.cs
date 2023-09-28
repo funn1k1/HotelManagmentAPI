@@ -1,9 +1,12 @@
 ﻿using HotelManagment_API.Models;
+using HotelManagment_Utility;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HotelManagment_API.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -11,10 +14,12 @@ namespace HotelManagment_API.Data
 
         public DbSet<Room> Rooms { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             var hotels = new List<Hotel>
             {
                 new Hotel
@@ -164,6 +169,17 @@ namespace HotelManagment_API.Data
                 },
             };
             modelBuilder.Entity<Room>().HasData(rooms);
+
+            var roles = new List<IdentityRole>();
+            foreach (var roleName in Constants.Roles)
+            {
+                roles.Add(new IdentityRole
+                {
+                    Name = roleName,
+                    NormalizedName = roleName.ToUpper()
+                });
+            }
+            modelBuilder.Entity<IdentityRole>().HasData(roles);
         }
     }
 }

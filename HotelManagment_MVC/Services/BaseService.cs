@@ -37,7 +37,7 @@ namespace HotelManagment_MVC.Services
                 {
                     var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
                     response.Result = apiResponse.Result;
-                    response.IsSuccess = httpRespMess.IsSuccessStatusCode;
+                    response.IsSuccess = apiResponse.IsSuccess;
                 }
                 else
                 {
@@ -46,6 +46,7 @@ namespace HotelManagment_MVC.Services
                     {
                         response.Result = apiResponse.Result;
                         response.ErrorMessages = apiResponse.ErrorMessages;
+                        response.IsSuccess = apiResponse.IsSuccess;
                     }
                     else
                     {

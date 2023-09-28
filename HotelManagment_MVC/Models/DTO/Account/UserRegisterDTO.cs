@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace HotelManagment_MVC.Models.DTO.Account
+namespace HotelManagment_API.Models.DTO.Account
 {
-    public class RegisterDTO
+    public class UserRegisterDTO
     {
         public string FullName { get; set; }
 

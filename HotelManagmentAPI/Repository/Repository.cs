@@ -84,7 +84,7 @@ namespace HotelManagment_API.Repository
                 return await query.FirstOrDefaultAsync(filter);
             }
 
-            return default;
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task SaveAsync()

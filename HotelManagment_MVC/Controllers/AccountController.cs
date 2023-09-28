@@ -1,7 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using HotelManagment_MVC.Models;
-using HotelManagment_MVC.Models.DTO.Account;
+using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_MVC.Services.Interfaces;
 using HotelManagment_MVC.ViewModels.Account;
 using HotelManagment_Utility;
@@ -35,7 +34,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(loginVM);
             }
 
-            var apiResponse = await _accountService.Login<string, LoginDTO>(loginVM.Account);
+            var apiResponse = await _accountService.Login<string, UserLoginDTO>(loginVM.Account);
             if (!apiResponse.IsSuccess)
             {
                 AddModelErrors(apiResponse.ErrorMessages);
@@ -43,7 +42,7 @@ namespace HotelManagment_MVC.Controllers
             }
 
             var token = new JwtSecurityTokenHandler().ReadJwtToken(apiResponse.Result);
-            var userName = loginVM.Account.UserName;
+            var userName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             var roleName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var claims = new List<Claim>
             {
@@ -64,7 +63,7 @@ namespace HotelManagment_MVC.Controllers
         {
             var registerVM = new RegisterViewModel
             {
-                Account = new RegisterDTO
+                Account = new UserRegisterDTO
                 {
                     Roles = Constants.Roles.Select(roleName => new SelectListItem
                     {
@@ -80,17 +79,17 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
+            registerVM.Account.Roles = Constants.Roles.Select(roleName => new SelectListItem
+            {
+                Text = roleName,
+                Value = roleName
+            });
             if (!ModelState.IsValid)
             {
-                registerVM.Account.Roles = Constants.Roles.Select(roleName => new SelectListItem
-                {
-                    Text = roleName,
-                    Value = roleName
-                });
                 return View(registerVM);
             }
 
-            var apiResponse = await _accountService.Register<User, RegisterDTO>(registerVM.Account);
+            var apiResponse = await _accountService.Register<UserDTO, UserRegisterDTO>(registerVM.Account);
             if (!apiResponse.IsSuccess)
             {
                 AddModelErrors(apiResponse.ErrorMessages);

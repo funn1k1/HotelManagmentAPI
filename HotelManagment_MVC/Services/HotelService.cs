@@ -15,7 +15,7 @@ namespace HotelManagment_MVC.Services
         ) : base(httlClientFactory, logger)
         {
             _apiUrl = $"{configuration.GetValue<string>("HotelManagment_API:Domain")}/" +
-                $"{configuration.GetValue<string>("HotelManagment_API:HotelAPIUrl")}";
+                $"{configuration.GetValue<string>("HotelManagment_API:HotelApiUrl")}";
         }
 
         public async Task<APIResponse<T>> CreateAsync<T, K>(K entity, string token)
