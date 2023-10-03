@@ -79,13 +79,13 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel registerVM)
         {
-            registerVM.Account.Roles = Constants.Roles.Select(roleName => new SelectListItem
-            {
-                Text = roleName,
-                Value = roleName
-            });
             if (!ModelState.IsValid)
             {
+                registerVM.Account.Roles = Constants.Roles.Select(roleName => new SelectListItem
+                {
+                    Text = roleName,
+                    Value = roleName
+                });
                 return View(registerVM);
             }
 

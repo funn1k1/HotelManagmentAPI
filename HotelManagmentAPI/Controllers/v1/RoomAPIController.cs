@@ -29,7 +29,6 @@ namespace HotelManagment_API.Controllers.v1
             _hotelRepo = hotelRepo;
         }
 
-        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync(int pageNumber, int pageSize)

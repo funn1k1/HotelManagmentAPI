@@ -10,13 +10,18 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
         options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
     });
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
+    options.Cookie.IsEssential = true;
     options.Cookie.HttpOnly = true;
 });
-builder.Services.AddDistributedMemoryCache();
+
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();

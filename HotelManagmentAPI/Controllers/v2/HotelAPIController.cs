@@ -3,6 +3,7 @@ using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Hotel;
 using HotelManagment_API.Repository.Interfaces;
+using HotelManagment_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -15,32 +16,36 @@ namespace HotelManagment_API.Controllers.v2
     [ApiController]
     public class HotelAPIController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly IHotelRepository _hotelRepo;
-        private List<string> _hotels = new();
+        private readonly IImageService _imageService;
+        private readonly IMapper _mapper;
 
-        public HotelAPIController(IHotelRepository hotelRepo, IMapper mapper)
+        public HotelAPIController(IHotelRepository hotelRepo, IImageService imageService, IMapper mapper)
         {
-            _mapper = mapper;
             _hotelRepo = hotelRepo;
-            for (int i = 1; i <= 10; i++)
-            {
-                _hotels.Add($"Hotel {i}");
-            }
+            _imageService = imageService;
+            _mapper = mapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult GetHotelsAsync(int pageNumber = 1, int pageSize = 3)
+        public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync(int pageNumber, int pageSize)
         {
+            var response = new APIResponse<List<HotelDTO>>
+            {
+                IsSuccess = true,
+                Result = _mapper.Map<List<HotelDTO>>(
+                    await _hotelRepo.GetAllAsync(includeProperties: h => h.Rooms, isTracked: false, pageNumber: pageNumber, pageSize: pageSize)
+                ),
+                StatusCode = HttpStatusCode.OK
+            };
             var pagination = new
             {
                 pageNumber,
-                pageSize
+                pageSize,
             };
             Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination));
-            var hotels = _hotels.Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToList();
-            return Ok(hotels);
+            return Ok(response);
         }
 
         [ResponseCache(CacheProfileName = "Cache2Min")]
@@ -91,26 +96,35 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> CreateHotelAsync([FromBody] HotelCreateDTO hotelDto)
+        public async Task<IActionResult> CreateHotelAsync([FromForm] HotelCreateDTO hotelDto)
         {
-            var response = new APIResponse<Hotel>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Name == hotelDto.Name);
-            if (hotel != null)
+            try
             {
-                //ModelState.AddModelError("Name", "A hotel with this name already exists");
-                response.StatusCode = HttpStatusCode.BadRequest;
-                response.AddErrorMessage("Hotel with this name already exists");
-                return BadRequest(response);
+                var response = new APIResponse<Hotel>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Name == hotelDto.Name);
+                if (hotel != null)
+                {
+                    //ModelState.AddModelError("Name", "A hotel with this name already exists");
+                    response.StatusCode = HttpStatusCode.BadRequest;
+                    response.AddErrorMessage("Hotel with this name already exists");
+                    return BadRequest(response);
+                }
+
+                hotelDto.ImageUrl = await _imageService.UploadAsync(hotelDto.ImageFile) ?? hotelDto.ImageUrl;
+                var newHotel = _mapper.Map<Hotel>(hotelDto);
+                newHotel.CreatedDate = DateTime.Now;
+
+                await _hotelRepo.AddAsync(newHotel);
+
+                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.Created;
+                response.Result = newHotel;
+                return CreatedAtRoute("GetHotel", new { id = response.Result.Id }, response);
             }
-
-            var newHotel = _mapper.Map<Hotel>(hotelDto);
-            newHotel.CreatedDate = DateTime.Now;
-            await _hotelRepo.AddAsync(newHotel);
-
-            response.IsSuccess = true;
-            response.StatusCode = HttpStatusCode.Created;
-            response.Result = newHotel;
-            return CreatedAtRoute("GetHotel", new { id = response.Result.Id }, response.Result);
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while creating a hotel");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -130,6 +144,10 @@ namespace HotelManagment_API.Controllers.v2
                 return NotFound(response);
             }
 
+            if (!string.IsNullOrEmpty(hotel.ImageUrl))
+            {
+                _imageService.Delete(hotel.ImageUrl);
+            }
             await _hotelRepo.DeleteAsync(hotel);
 
             response.Result = _mapper.Map<HotelDTO>(hotel);
@@ -144,7 +162,7 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] HotelUpdateDTO hotelDto)
+        public async Task<IActionResult> UpdateHotelAsync(int id, [FromForm] HotelUpdateDTO hotelDto)
         {
             var response = new APIResponse<HotelDTO>();
             var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
@@ -155,6 +173,7 @@ namespace HotelManagment_API.Controllers.v2
                 return NotFound(response);
             }
 
+            hotelDto.ImageUrl = await _imageService.UpdateImageAsync(hotelDto.ImageFile, hotel.ImageUrl) ?? hotelDto.ImageUrl;
             _mapper.Map(hotelDto, hotel);
             await _hotelRepo.UpdateAsync(hotel);
 

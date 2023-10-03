@@ -24,7 +24,6 @@ namespace HotelManagment_API.Controllers.v1
             _hotelRepo = hotelRepo;
         }
 
-        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync(int pageNumber, int pageSize)
@@ -46,7 +45,6 @@ namespace HotelManagment_API.Controllers.v1
             return Ok(response);
         }
 
-        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{id:int}", Name = "GetHotel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

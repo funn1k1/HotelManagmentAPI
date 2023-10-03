@@ -29,10 +29,9 @@ namespace HotelManagment_API.Controllers.v2
             _hotelRepo = hotelRepo;
         }
 
-        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync(int pageNumber, int pageSize)
+        public async Task<ActionResult<APIResponse<List<RoomDTO>>>> GetRoomsAsync([Bind()] int pageNumber, int pageSize)
         {
             var response = new APIResponse<List<RoomDTO>>
             {
@@ -130,7 +129,7 @@ namespace HotelManagment_API.Controllers.v2
             response.Result = newRoom;
             response.IsSuccess = true;
             response.StatusCode = HttpStatusCode.Created;
-            return CreatedAtRoute("GetRoom", new { id = response.Result.Id }, response.Result);
+            return CreatedAtRoute("GetRoom", new { id = response.Result.Id }, response);
         }
 
         [Authorize(Roles = "Admin")]

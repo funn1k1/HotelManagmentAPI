@@ -7,7 +7,9 @@ namespace HotelManagment_API.Models.DTO.Hotel
         [MaxLength(50)]
         public string Name { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
 
         public string Address { get; set; }
 
@@ -17,6 +19,7 @@ namespace HotelManagment_API.Models.DTO.Hotel
 
         public string PhoneNumber { get; set; }
 
+        [EmailAddress]
         public string Email { get; set; }
     }
 }

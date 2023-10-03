@@ -15,6 +15,7 @@ namespace HotelManagment_API.Models.DTO.Hotel
 
         public string Description { get; set; }
 
+        [Range(1, 5)]
         public decimal Rating { get; set; }
 
         public string PhoneNumber { get; set; }

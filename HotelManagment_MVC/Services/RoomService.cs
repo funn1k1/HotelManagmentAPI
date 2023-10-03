@@ -44,7 +44,7 @@ namespace HotelManagment_MVC.Services
                     { "Accept", "application/json" },
                     { "Authorization", "Bearer " + token }
                 },
-                Url = $"{_apiUrl}/{id}"
+                Url = $"{_apiUrl}/{id}",
             };
             return await SendAsync<T, K>(apiRequest);
         }

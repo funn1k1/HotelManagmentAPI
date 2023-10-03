@@ -63,11 +63,6 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoomCreateViewModel roomCreateVM)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(roomCreateVM);
-            }
-
             var getRoomsResp = await _hotelService.GetAllAsync<List<HotelDTO>>();
             if (!getRoomsResp.IsSuccess)
             {
@@ -75,26 +70,21 @@ namespace HotelManagment_MVC.Controllers
                 return View(roomCreateVM);
             }
 
+            roomCreateVM.Hotels = getRoomsResp.Result.Select(h => new SelectListItem
+            {
+                Text = h.Name,
+                Value = h.Id.ToString()
+            });
+
             if (!ModelState.IsValid)
             {
-                roomCreateVM.Hotels = getRoomsResp.Result.Select(h => new SelectListItem
-                {
-                    Text = h.Name,
-                    Value = h.Id.ToString()
-                });
-
                 return View(roomCreateVM);
             }
 
             var token = HttpContext.Session.GetString(Constants.JwtToken);
-            var createRoomResp = await _roomService.CreateAsync<List<Room>, RoomCreateDTO>(roomCreateVM.Room, token);
+            var createRoomResp = await _roomService.CreateAsync<Room, RoomCreateDTO>(roomCreateVM.Room, token);
             if (!createRoomResp.IsSuccess)
             {
-                roomCreateVM.Hotels = getRoomsResp.Result.Select(h => new SelectListItem
-                {
-                    Text = h.Name,
-                    Value = h.Id.ToString()
-                });
                 AddModelErrors(createRoomResp.ErrorMessages);
                 return View(roomCreateVM);
             }

@@ -4,6 +4,7 @@ using HotelManagment_API.Data;
 using HotelManagment_API.Models;
 using HotelManagment_API.Repository;
 using HotelManagment_API.Repository.Interfaces;
+using HotelManagment_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -43,8 +44,12 @@ builder.Services.AddAuthentication(options =>
     });
 builder.Services.AddAuthorization();
 
+// Repositories
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+
+// Services
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddControllers(options =>
@@ -120,8 +125,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         // Add Swagger endpoints
-        var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+        foreach (var description in provider.ApiVersionDescriptions.Reverse())
         {
             options.SwaggerEndpoint(
                 $"/swagger/{description.GroupName}/swagger.json",
@@ -132,6 +137,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseSerilogRequestLogging();
+app.UseStaticFiles();
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseResponseCaching();
