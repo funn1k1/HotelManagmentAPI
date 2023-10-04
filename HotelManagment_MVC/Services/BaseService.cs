@@ -106,13 +106,45 @@ namespace HotelManagment_MVC.Services
             }
         }
 
-        private void SetRequestContent<K>(HttpRequestMessage httpRequest, APIRequest<K> apiRequest)
+        private void SetRequestContent<K>(HttpRequestMessage httpReqMess, APIRequest<K> apiRequest)
         {
-            httpRequest.Content = new StringContent(
-                JsonConvert.SerializeObject(apiRequest.Data),
-                Encoding.Unicode,
-                "application/json"
-            );
+            if (apiRequest.Data != null)
+            {
+                var contentType = apiRequest.Headers["Content-Type"];
+                switch (contentType)
+                {
+                    case "application/json":
+                        httpReqMess.Content = new StringContent(
+                            JsonConvert.SerializeObject(apiRequest.Data),
+                            Encoding.Unicode,
+                            contentType
+                        );
+                        break;
+                    case "multipart/form-data":
+                        var formDataContent = new MultipartFormDataContent();
+                        foreach (var prop in apiRequest.Data.GetType().GetProperties())
+                        {
+                            var value = prop.GetValue(apiRequest.Data);
+                            if (value is FormFile)
+                            {
+                                var file = value as FormFile;
+                                if (file != null)
+                                {
+                                    var streamContent = new StreamContent(file.OpenReadStream());
+                                    formDataContent.Add(streamContent, prop.Name, file.FileName);
+                                }
+                            }
+                            else
+                            {
+                                var stringContent = new StringContent(value?.ToString() ?? "");
+                                formDataContent.Add(stringContent, prop.Name);
+                            }
+                        }
+                        httpReqMess.Content = formDataContent;
+                        break;
+                }
+
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ namespace HotelManagment_MVC.Services
                 Method = APIHttpMethod.POST,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" },
                     { "Authorization", "Bearer " + token }
                 },
@@ -41,6 +42,7 @@ namespace HotelManagment_MVC.Services
                 Method = APIHttpMethod.DELETE,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" },
                     { "Authorization", "Bearer " + token }
                 },
@@ -56,6 +58,7 @@ namespace HotelManagment_MVC.Services
                 Method = APIHttpMethod.GET,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" },
                 },
                 Url = $"{_apiUrl}"
@@ -70,6 +73,7 @@ namespace HotelManagment_MVC.Services
                 Method = APIHttpMethod.GET,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" },
                 },
                 Url = $"{_apiUrl}/{id}"
@@ -85,6 +89,7 @@ namespace HotelManagment_MVC.Services
                 Method = APIHttpMethod.PUT,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" },
                     { "Authorization", "Bearer " + token }
                 },

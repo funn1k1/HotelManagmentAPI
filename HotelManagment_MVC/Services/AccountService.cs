@@ -24,6 +24,7 @@ namespace HotelManagment_MVC.Services
                 Data = entity,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" }
                 },
                 Method = APIHttpMethod.POST,
@@ -40,6 +41,7 @@ namespace HotelManagment_MVC.Services
                 Data = entity,
                 Headers = new Dictionary<string, string>
                 {
+                    { "Content-Type", "application/json" },
                     { "Accept", "application/json" }
                 },
                 Method = APIHttpMethod.POST,

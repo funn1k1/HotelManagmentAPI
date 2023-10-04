@@ -2,7 +2,7 @@
 
 <div class="row">
     <h2>Create Hotel</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="mb-3">
             <label asp-for="Hotel.Name" class="form-label"></label>
@@ -13,6 +13,11 @@
             <label asp-for="Hotel.ImageUrl" class="form-label"></label>
             <input asp-for="Hotel.ImageUrl" class="form-control">
             <span asp-validation-for="Hotel.ImageUrl" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Hotel.ImageFile" class="form-label"></label>
+            <input asp-for="Hotel.ImageFile" accept="image/*" class="form-control">
+            <span asp-validation-for="Hotel.ImageFile" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Hotel.Address" class="form-label"></label>

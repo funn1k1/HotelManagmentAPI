@@ -7,7 +7,9 @@ namespace HotelManagment_MVC.Models.DTO.Hotel
         [MaxLength(50)]
         public string Name { get; set; }
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
 
         public string Address { get; set; }
 
