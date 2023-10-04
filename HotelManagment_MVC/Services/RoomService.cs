@@ -4,21 +4,19 @@ using HotelManagment_Utility.Enums;
 
 namespace HotelManagment_MVC.Services
 {
-    public class RoomService : BaseService, IRoomService
+    public class RoomService : IRoomService
     {
         private readonly string? _apiUrl;
+        private readonly IBaseService _baseService;
 
-        public RoomService(
-            IConfiguration configuration,
-            IHttpClientFactory httlClientFactory,
-            ILogger<BaseService> logger
-        ) : base(httlClientFactory, logger)
+        public RoomService(IConfiguration configuration, IBaseService baseService)
         {
             _apiUrl = $"{configuration.GetValue<string>("HotelManagment_API:Domain")}/" +
                 $"{configuration.GetValue<string>("HotelManagment_API:RoomApiUrl")}";
+            _baseService = baseService;
         }
 
-        public async Task<APIResponse<T>> CreateAsync<T, K>(K roomDto, string token)
+        public async Task<APIResponse<T>> CreateAsync<T, K>(K roomDto)
         {
             var apiRequest = new APIRequest<K>()
             {
@@ -27,15 +25,14 @@ namespace HotelManagment_MVC.Services
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
-                    { "Accept", "application/json" },
-                    { "Authorization", "Bearer " + token }
+                    { "Accept", "application/json" }
                 },
                 Url = $"{_apiUrl}"
             };
-            return await SendAsync<T, K>(apiRequest);
+            return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
         }
 
-        public async Task<APIResponse<T>> DeleteAsync<T, K>(K id, string token)
+        public async Task<APIResponse<T>> DeleteAsync<T, K>(K id)
         {
             var apiRequest = new APIRequest<K>()
             {
@@ -43,12 +40,11 @@ namespace HotelManagment_MVC.Services
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
-                    { "Accept", "application/json" },
-                    { "Authorization", "Bearer " + token }
+                    { "Accept", "application/json" }
                 },
                 Url = $"{_apiUrl}/{id}",
             };
-            return await SendAsync<T, K>(apiRequest);
+            return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
         }
 
         public async Task<APIResponse<T>> GetAllAsync<T>()
@@ -63,7 +59,7 @@ namespace HotelManagment_MVC.Services
                 },
                 Url = $"{_apiUrl}"
             };
-            return await SendAsync<T, T>(apiRequest);
+            return await _baseService.SendAsync<T, T>(apiRequest);
         }
 
         public async Task<APIResponse<T>> GetAsync<T, K>(K id)
@@ -78,10 +74,10 @@ namespace HotelManagment_MVC.Services
                 },
                 Url = $"{_apiUrl}/{id}"
             };
-            return await SendAsync<T, K>(apiRequest);
+            return await _baseService.SendAsync<T, K>(apiRequest);
         }
 
-        public async Task<APIResponse<T>> UpdateAsync<T, K>(K roomDto, string token) where K : RoomUpdateDTO
+        public async Task<APIResponse<T>> UpdateAsync<T, K>(K roomDto) where K : RoomUpdateDTO
         {
             var apiRequest = new APIRequest<K>()
             {
@@ -90,12 +86,11 @@ namespace HotelManagment_MVC.Services
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
-                    { "Accept", "application/json" },
-                    { "Authorization", "Bearer " + token }
+                    { "Accept", "application/json" }
                 },
                 Url = $"{_apiUrl}/{roomDto.Id}"
             };
-            return await SendAsync<T, K>(apiRequest);
+            return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
         }
     }
 }

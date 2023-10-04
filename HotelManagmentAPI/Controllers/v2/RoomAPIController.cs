@@ -113,7 +113,7 @@ namespace HotelManagment_API.Controllers.v2
                 return BadRequest(response);
             }
 
-            var room = await _roomRepo.GetAsync(r => r.RoomNumber == roomDto.RoomNumber);
+            var room = await _roomRepo.GetAsync(r => r.RoomNumber == roomDto.RoomNumber && hotel.Id == r.Hotel.Id);
             if (room != null)
             {
                 //ModelState.AddModelError("Name", "A hotel with this name already exists");

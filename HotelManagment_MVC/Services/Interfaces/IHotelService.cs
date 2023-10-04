@@ -8,10 +8,10 @@ namespace HotelManagment_MVC.Services.Interfaces
 
         Task<APIResponse<T>> GetAsync<T, K>(K id);
 
-        Task<APIResponse<T>> CreateAsync<T, K>(K entity, string token);
+        Task<APIResponse<T>> CreateAsync<T, K>(K entity);
 
-        Task<APIResponse<T>> UpdateAsync<T, K>(K entity, string token) where K : HotelUpdateDTO;
+        Task<APIResponse<T>> UpdateAsync<T, K>(K entity) where K : HotelUpdateDTO;
 
-        Task<APIResponse<T>> DeleteAsync<T, K>(K id, string token);
+        Task<APIResponse<T>> DeleteAsync<T, K>(K id);
     }
 }

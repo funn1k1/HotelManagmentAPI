@@ -77,7 +77,7 @@ namespace HotelManagment_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> LoginAsync(UserLoginDTO loginDto)
         {
-            var apiResponse = new APIResponse<string>();
+            var apiResponse = new APIResponse<TokenDTO>();
             var user = await _userManager.FindByNameAsync(loginDto.UserName);
             if (user == null)
             {
@@ -107,7 +107,7 @@ namespace HotelManagment_API.Controllers
             return Ok(apiResponse);
         }
 
-        private string GenerateToken(UserDTO user)
+        private TokenDTO GenerateToken(UserDTO user)
         {
             var issuer = _configuration["Jwt:Issuer"];
             var audience = _configuration["Jwt:Audience"];
@@ -126,7 +126,7 @@ namespace HotelManagment_API.Controllers
                 expires: DateTime.UtcNow.AddMinutes(15),
                 signingCredentials: credentials
             );
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new TokenDTO { Token = new JwtSecurityTokenHandler().WriteToken(token) };
         }
     }
 }

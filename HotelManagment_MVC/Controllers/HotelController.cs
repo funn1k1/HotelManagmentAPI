@@ -2,7 +2,6 @@
 using HotelManagment_MVC.Models.DTO.Hotel;
 using HotelManagment_MVC.Services.Interfaces;
 using HotelManagment_MVC.ViewModels.Hotel;
-using HotelManagment_Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,8 +47,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(hotelCreateVM);
             }
 
-            var token = HttpContext.Session.GetString(Constants.JwtToken);
-            var createHotelResp = await _hotelService.CreateAsync<Hotel, HotelCreateDTO>(hotelCreateVM.Hotel, token);
+            var createHotelResp = await _hotelService.CreateAsync<Hotel, HotelCreateDTO>(hotelCreateVM.Hotel);
             if (!createHotelResp.IsSuccess)
             {
                 AddModelErrors(createHotelResp.ErrorMessages);
@@ -87,8 +85,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(hotelUpdateVM);
             }
 
-            var token = HttpContext.Session.GetString(Constants.JwtToken);
-            var updateHotelResp = await _hotelService.UpdateAsync<HotelDTO, HotelUpdateDTO>(hotelUpdateVM.Hotel, token);
+            var updateHotelResp = await _hotelService.UpdateAsync<HotelDTO, HotelUpdateDTO>(hotelUpdateVM.Hotel);
             if (!updateHotelResp.IsSuccess)
             {
                 AddModelErrors(updateHotelResp.ErrorMessages);
@@ -121,8 +118,7 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
         {
-            var token = HttpContext.Session.GetString(Constants.JwtToken);
-            var deleteHotelResp = await _hotelService.DeleteAsync<HotelDTO, int>(id, token);
+            var deleteHotelResp = await _hotelService.DeleteAsync<HotelDTO, int>(id);
             if (!deleteHotelResp.IsSuccess)
             {
                 AddModelErrors(deleteHotelResp.ErrorMessages);

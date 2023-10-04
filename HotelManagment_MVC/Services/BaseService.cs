@@ -9,14 +9,16 @@ namespace HotelManagment_MVC.Services
     {
         private readonly IHttpClientFactory _httlClientFactory;
         private readonly ILogger<BaseService> _logger;
+        private readonly ITokenProvider _tokenProvider;
 
-        public BaseService(IHttpClientFactory httlClientFactory, ILogger<BaseService> logger)
+        public BaseService(IHttpClientFactory httlClientFactory, ILogger<BaseService> logger, ITokenProvider tokenProvider)
         {
             _httlClientFactory = httlClientFactory;
             _logger = logger;
+            _tokenProvider = tokenProvider;
         }
 
-        public async Task<APIResponse<T>> SendAsync<T, K>(APIRequest<K> apiRequest)
+        public async Task<APIResponse<T>> SendAsync<T, K>(APIRequest<K> apiRequest, bool bearerExists = false)
         {
             try
             {
@@ -26,8 +28,12 @@ namespace HotelManagment_MVC.Services
                 SetRequestUrl(httpReqMess, apiRequest);
                 SetHttpMethod(httpReqMess, apiRequest);
                 SetRequestHeader(httpReqMess, apiRequest, "Accept");
-                SetRequestHeader(httpReqMess, apiRequest, "Authorization");
                 SetRequestContent(httpReqMess, apiRequest);
+                if (bearerExists && !string.IsNullOrEmpty(_tokenProvider.GetToken().Token))
+                {
+                    var token = _tokenProvider.GetToken().Token;
+                    httpReqMess.Headers.Add("Authorization", $"Bearer {token}");
+                }
 
                 var httpRespMess = await httpClient.SendAsync(httpReqMess);
 
@@ -95,14 +101,14 @@ namespace HotelManagment_MVC.Services
         }
 
         private void SetRequestHeader<K>(
-            HttpRequestMessage httpRequest,
+            HttpRequestMessage httpReqMess,
             APIRequest<K> apiRequest,
             string headerName
         )
         {
             if (apiRequest.Headers.TryGetValue(headerName, out var headerValue))
             {
-                httpRequest.Headers.Add(headerName, headerValue);
+                httpReqMess.Headers.Add(headerName, headerValue);
             }
         }
 

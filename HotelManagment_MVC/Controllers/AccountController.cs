@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using HotelManagment_API.Models.DTO.Account;
+using HotelManagment_MVC.Models.DTO.Account;
 using HotelManagment_MVC.Services.Interfaces;
 using HotelManagment_MVC.ViewModels.Account;
 using HotelManagment_Utility;
@@ -14,10 +15,12 @@ namespace HotelManagment_MVC.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
+        private readonly ITokenProvider _tokenProvider;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, ITokenProvider tokenProvider)
         {
             _accountService = accountService;
+            _tokenProvider = tokenProvider;
         }
 
         public IActionResult Login()
@@ -34,14 +37,14 @@ namespace HotelManagment_MVC.Controllers
                 return View(loginVM);
             }
 
-            var apiResponse = await _accountService.Login<string, UserLoginDTO>(loginVM.Account);
+            var apiResponse = await _accountService.Login<TokenDTO, UserLoginDTO>(loginVM.Account);
             if (!apiResponse.IsSuccess)
             {
                 AddModelErrors(apiResponse.ErrorMessages);
                 return View(loginVM);
             }
 
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(apiResponse.Result);
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(apiResponse.Result.Token);
             var userName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             var roleName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var claims = new List<Claim>
@@ -54,7 +57,7 @@ namespace HotelManagment_MVC.Controllers
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            HttpContext.Session.SetString(Constants.JwtToken, apiResponse.Result);
+            _tokenProvider.SetToken(apiResponse.Result.Token);
             TempData["Success"] = "Success";
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -103,7 +106,7 @@ namespace HotelManagment_MVC.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            HttpContext.Session.Remove(Constants.JwtToken);
+            _tokenProvider.ClearToken();
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
