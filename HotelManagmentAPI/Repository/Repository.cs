@@ -7,7 +7,7 @@ namespace HotelManagment_API.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly ApplicationDbContext _db;
+        private protected readonly ApplicationDbContext _db;
         private readonly DbSet<T> _dbSet;
 
         public Repository(ApplicationDbContext db)
@@ -69,7 +69,8 @@ namespace HotelManagment_API.Repository
 
         public async Task<T?> GetAsync(
             Expression<Func<T, bool>>? filter = null,
-            Expression<Func<T, object>>? includeProperties = null
+            Expression<Func<T, object>>? includeProperties = null,
+            bool isTracked = true
         )
         {
             IQueryable<T> query = _dbSet.AsQueryable();
@@ -77,6 +78,11 @@ namespace HotelManagment_API.Repository
             if (includeProperties != null)
             {
                 query = query.Include(includeProperties);
+            }
+
+            if (!isTracked)
+            {
+                query = query.AsNoTracking();
             }
 
             if (filter != null)

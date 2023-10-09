@@ -44,7 +44,7 @@ namespace HotelManagment_MVC.Controllers
                 return View(loginVM);
             }
 
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(apiResponse.Result.Token);
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(apiResponse.Result.AccessToken);
             var userName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             var roleName = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
             var claims = new List<Claim>
@@ -57,7 +57,7 @@ namespace HotelManagment_MVC.Controllers
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            _tokenProvider.SetToken(apiResponse.Result.Token);
+            _tokenProvider.SetToken(apiResponse.Result);
             TempData["Success"] = "Success";
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
@@ -106,7 +106,7 @@ namespace HotelManagment_MVC.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
-            _tokenProvider.ClearToken();
+            _tokenProvider.DeleteToken();
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 

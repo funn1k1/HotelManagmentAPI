@@ -29,9 +29,9 @@ namespace HotelManagment_MVC.Services
                 SetHttpMethod(httpReqMess, apiRequest);
                 SetRequestHeader(httpReqMess, apiRequest, "Accept");
                 SetRequestContent(httpReqMess, apiRequest);
-                if (bearerExists && !string.IsNullOrEmpty(_tokenProvider.GetToken().Token))
+                if (bearerExists && !string.IsNullOrEmpty(_tokenProvider.GetToken().AccessToken))
                 {
-                    var token = _tokenProvider.GetToken().Token;
+                    var token = _tokenProvider.GetToken().AccessToken;
                     httpReqMess.Headers.Add("Authorization", $"Bearer {token}");
                 }
 

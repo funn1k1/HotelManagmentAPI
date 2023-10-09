@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace HotelManagment_API.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangeImageUrlTypeInHotelsTable : Migration
+    public partial class AddTokensTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,20 +16,90 @@ namespace HotelManagment_API.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "7cf4ccd0-42f4-4744-8d8f-725f55d76a04");
+                keyValue: "a0f00c96-75d8-47bb-99f9-d5a0ac606b56");
 
             migrationBuilder.DeleteData(
                 table: "AspNetRoles",
                 keyColumn: "Id",
-                keyValue: "dffddad0-9ead-45dc-ba51-70c139343976");
+                keyValue: "ea9143d6-8db9-46a0-89e5-efbce964f43f");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "ImageUrl",
+            migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AccessToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "2a628164-73c2-4428-9a3a-01cc6816d552", null, "Admin", "ADMIN" },
+                    { "952b5f4e-f4cd-415e-90ec-a0b825d44c3e", null, "User", "USER" }
+                });
+
+            migrationBuilder.UpdateData(
                 table: "Hotels",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                keyColumn: "Id",
+                keyValue: 1,
+                column: "CreatedDate",
+                value: new DateTime(2023, 10, 9, 19, 42, 0, 419, DateTimeKind.Local).AddTicks(1191));
+
+            migrationBuilder.UpdateData(
+                table: "Hotels",
+                keyColumn: "Id",
+                keyValue: 2,
+                column: "CreatedDate",
+                value: new DateTime(2023, 10, 9, 19, 42, 0, 419, DateTimeKind.Local).AddTicks(1203));
+
+            migrationBuilder.UpdateData(
+                table: "Hotels",
+                keyColumn: "Id",
+                keyValue: 3,
+                column: "CreatedDate",
+                value: new DateTime(2023, 10, 9, 19, 42, 0, 419, DateTimeKind.Local).AddTicks(1205));
+
+            migrationBuilder.UpdateData(
+                table: "Hotels",
+                keyColumn: "Id",
+                keyValue: 4,
+                column: "CreatedDate",
+                value: new DateTime(2023, 10, 9, 19, 42, 0, 419, DateTimeKind.Local).AddTicks(1208));
+
+            migrationBuilder.UpdateData(
+                table: "Hotels",
+                keyColumn: "Id",
+                keyValue: 5,
+                column: "CreatedDate",
+                value: new DateTime(2023, 10, 9, 19, 42, 0, 419, DateTimeKind.Local).AddTicks(1210));
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Tokens");
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "2a628164-73c2-4428-9a3a-01cc6816d552");
+
+            migrationBuilder.DeleteData(
+                table: "AspNetRoles",
+                keyColumn: "Id",
+                keyValue: "952b5f4e-f4cd-415e-90ec-a0b825d44c3e");
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
@@ -73,74 +144,6 @@ namespace HotelManagment_API.Migrations
                 keyValue: 5,
                 column: "CreatedDate",
                 value: new DateTime(2023, 10, 3, 14, 10, 6, 237, DateTimeKind.Local).AddTicks(3669));
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DeleteData(
-                table: "AspNetRoles",
-                keyColumn: "Id",
-                keyValue: "a0f00c96-75d8-47bb-99f9-d5a0ac606b56");
-
-            migrationBuilder.DeleteData(
-                table: "AspNetRoles",
-                keyColumn: "Id",
-                keyValue: "ea9143d6-8db9-46a0-89e5-efbce964f43f");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "ImageUrl",
-                table: "Hotels",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { "7cf4ccd0-42f4-4744-8d8f-725f55d76a04", null, "User", "USER" },
-                    { "dffddad0-9ead-45dc-ba51-70c139343976", null, "Admin", "ADMIN" }
-                });
-
-            migrationBuilder.UpdateData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "CreatedDate",
-                value: new DateTime(2023, 9, 28, 17, 55, 51, 344, DateTimeKind.Local).AddTicks(789));
-
-            migrationBuilder.UpdateData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "CreatedDate",
-                value: new DateTime(2023, 9, 28, 17, 55, 51, 344, DateTimeKind.Local).AddTicks(803));
-
-            migrationBuilder.UpdateData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "CreatedDate",
-                value: new DateTime(2023, 9, 28, 17, 55, 51, 344, DateTimeKind.Local).AddTicks(805));
-
-            migrationBuilder.UpdateData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "CreatedDate",
-                value: new DateTime(2023, 9, 28, 17, 55, 51, 344, DateTimeKind.Local).AddTicks(807));
-
-            migrationBuilder.UpdateData(
-                table: "Hotels",
-                keyColumn: "Id",
-                keyValue: 5,
-                column: "CreatedDate",
-                value: new DateTime(2023, 9, 28, 17, 55, 51, 344, DateTimeKind.Local).AddTicks(809));
         }
     }
 }

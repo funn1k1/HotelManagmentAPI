@@ -6,8 +6,8 @@ namespace HotelManagment_MVC.Services.Interfaces
     {
         TokenDTO GetToken();
 
-        void SetToken(string token);
+        void SetToken(TokenDTO tokenDto);
 
-        void ClearToken();
+        void DeleteToken();
     }
 }

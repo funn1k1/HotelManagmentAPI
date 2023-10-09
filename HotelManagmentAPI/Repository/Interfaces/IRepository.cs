@@ -15,7 +15,8 @@ namespace HotelManagment_API.Repository.Interfaces
 
         Task<T?> GetAsync(
             Expression<Func<T, bool>>? filter = null,
-            Expression<Func<T, object>>? includeProperties = null
+            Expression<Func<T, object>>? includeProperties = null,
+            bool isTracked = true
         );
 
         Task AddAsync(T entity);

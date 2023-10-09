@@ -6,17 +6,12 @@ namespace HotelManagment_API.Repository
 {
     public class RoomRepository : Repository<Room>, IRoomRepository
     {
-        private readonly ApplicationDbContext _db;
+        public RoomRepository(ApplicationDbContext db) : base(db) { }
 
-        public RoomRepository(ApplicationDbContext db) : base(db)
+        public async Task UpdateAsync(Room room)
         {
-            _db = db;
-        }
-
-        public async Task UpdateAsync(Room entity)
-        {
-            _db.Update(entity);
-            await _db.SaveChangesAsync();
+            _db.Update(room);
+            await SaveAsync();
         }
     }
 }

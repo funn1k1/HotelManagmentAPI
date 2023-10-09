@@ -1,13 +1,12 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
+﻿using System.Net;
 using System.Security.Claims;
-using System.Text;
 using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Account;
+using HotelManagment_API.Repository.Interfaces;
+using HotelManagment_API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace HotelManagment_API.Controllers
 {
@@ -17,12 +16,18 @@ namespace HotelManagment_API.Controllers
     public class AccountAPIController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ITokenService _tokenService;
+        private readonly ITokenRepository _tokenRepo;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public AccountAPIController(UserManager<ApplicationUser> userManager, IMapper mapper, IConfiguration configuration)
+        public AccountAPIController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService, ITokenRepository tokenRepo, IMapper mapper, IConfiguration configuration)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
+            _tokenService = tokenService;
+            _tokenRepo = tokenRepo;
             _mapper = mapper;
             _configuration = configuration;
         }
@@ -47,6 +52,14 @@ namespace HotelManagment_API.Controllers
             {
                 apiResponse.StatusCode = HttpStatusCode.BadRequest;
                 apiResponse.AddErrorMessage("Failed to create a user");
+                return BadRequest(apiResponse);
+            }
+
+            var roleExists = await _roleManager.RoleExistsAsync(registerDto.Role);
+            if (!roleExists)
+            {
+                apiResponse.StatusCode = HttpStatusCode.BadRequest;
+                apiResponse.AddErrorMessage("This role does not exist");
                 return BadRequest(apiResponse);
             }
 
@@ -94,39 +107,33 @@ namespace HotelManagment_API.Controllers
                 return BadRequest(apiResponse);
             }
 
-            var userDto = new UserDTO
+            var oldToken = await _tokenRepo.GetAsync(t => t.UserName == loginDto.UserName && t.IsActive);
+            if (oldToken != null)
             {
-                Id = user.Id,
-                FullName = user.FullName,
-                UserName = user.UserName,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault()
+                oldToken.IsActive = false;
+            }
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Role, (await _userManager.GetRolesAsync(user)).FirstOrDefault()),
+                new Claim(ClaimTypes.Name, user.UserName)
             };
-            apiResponse.Result = GenerateToken(userDto);
+            var newToken = new Token
+            {
+                UserName = user.UserName,
+                AccessToken = _tokenService.GenerateAccessToken(claims),
+                RefreshToken = _tokenService.GenerateRefreshToken(),
+                RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30)
+            };
+            await _tokenRepo.AddAsync(newToken);
+
+            apiResponse.Result = new TokenDTO
+            {
+                AccessToken = newToken.AccessToken,
+                RefreshToken = newToken.RefreshToken
+            };
             apiResponse.StatusCode = HttpStatusCode.OK;
             apiResponse.IsSuccess = true;
             return Ok(apiResponse);
-        }
-
-        private TokenDTO GenerateToken(UserDTO user)
-        {
-            var issuer = _configuration["Jwt:Issuer"];
-            var audience = _configuration["Jwt:Audience"];
-            var securityKey = new SymmetricSecurityKey(Encoding.Unicode.GetBytes(_configuration["Jwt:SecurityKey"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var token = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15),
-                signingCredentials: credentials
-            );
-            return new TokenDTO { Token = new JwtSecurityTokenHandler().WriteToken(token) };
         }
     }
 }

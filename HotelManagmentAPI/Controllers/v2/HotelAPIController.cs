@@ -3,7 +3,7 @@ using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Hotel;
 using HotelManagment_API.Repository.Interfaces;
-using HotelManagment_API.Services;
+using HotelManagment_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -173,7 +173,7 @@ namespace HotelManagment_API.Controllers.v2
                 return NotFound(response);
             }
 
-            hotelDto.ImageUrl = await _imageService.UpdateImageAsync(hotelDto.ImageFile, hotel.ImageUrl) ?? hotelDto.ImageUrl;
+            hotelDto.ImageUrl = await _imageService.UpdateAsync(hotelDto.ImageFile, hotel.ImageUrl) ?? hotelDto.ImageUrl;
             _mapper.Map(hotelDto, hotel);
             await _hotelRepo.UpdateAsync(hotel);
 

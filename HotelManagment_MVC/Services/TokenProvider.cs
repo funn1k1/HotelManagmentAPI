@@ -15,22 +15,29 @@ namespace HotelManagment_MVC.Services
 
         public TokenDTO GetToken()
         {
-            if (_accessor.HttpContext != null && _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.AccessToken, out var token))
+            if (
+                _accessor.HttpContext != null &&
+                _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.AccessToken, out var accessToken) &&
+                _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.RefreshToken, out var refreshToken)
+            )
             {
-                return new TokenDTO { Token = token };
+                return new TokenDTO { AccessToken = accessToken, RefreshToken = refreshToken };
             };
             return new TokenDTO();
         }
 
-        public void SetToken(string token)
+        public void SetToken(TokenDTO tokenDto)
         {
-            var cookieOptions = new CookieOptions { Expires = DateTimeOffset.Now.AddMinutes(15) };
-            _accessor.HttpContext?.Response.Cookies.Append(Constants.AccessToken, token, cookieOptions);
+            var accessCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(60) };
+            var refreshCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddDays(1) };
+            _accessor.HttpContext?.Response.Cookies.Append(Constants.AccessToken, tokenDto.AccessToken, accessCookieOptions);
+            _accessor.HttpContext?.Response.Cookies.Append(Constants.RefreshToken, tokenDto.RefreshToken, refreshCookieOptions);
         }
 
-        public void ClearToken()
+        public void DeleteToken()
         {
             _accessor.HttpContext?.Response.Cookies.Delete(Constants.AccessToken);
+            _accessor.HttpContext?.Response.Cookies.Delete(Constants.RefreshToken);
         }
     }
 }

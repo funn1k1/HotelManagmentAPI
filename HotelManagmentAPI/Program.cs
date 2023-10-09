@@ -5,6 +5,7 @@ using HotelManagment_API.Models;
 using HotelManagment_API.Repository;
 using HotelManagment_API.Repository.Interfaces;
 using HotelManagment_API.Services;
+using HotelManagment_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,9 +48,11 @@ builder.Services.AddAuthorization();
 // Repositories
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Services
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddControllers(options =>

@@ -1,4 +1,6 @@
-﻿namespace HotelManagment_API.Services
+﻿using HotelManagment_API.Services.Interfaces;
+
+namespace HotelManagment_API.Services
 {
     public class ImageService : IImageService
     {
@@ -37,7 +39,7 @@
             return imageUrl;
         }
 
-        public async Task<string?> UpdateImageAsync(IFormFile? imageFile, string? oldImageUrl)
+        public async Task<string?> UpdateAsync(IFormFile? imageFile, string? oldImageUrl)
         {
             if (!string.IsNullOrEmpty(oldImageUrl))
             {
