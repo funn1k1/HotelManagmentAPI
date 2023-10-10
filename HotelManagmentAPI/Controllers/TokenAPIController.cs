@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Net;
+using System.Security.Claims;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_API.Repository.Interfaces;
@@ -68,11 +69,14 @@ namespace HotelManagment_API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Revoke()
         {
+            var apiResponse = new APIResponse<string>();
             var userName = User.Identity?.Name;
             var token = await _tokenRepo.GetAsync(t => t.UserName == userName && t.IsActive);
             if (token == null)
             {
-                return BadRequest("Active token not found");
+                apiResponse.StatusCode = HttpStatusCode.BadRequest;
+                apiResponse.AddErrorMessage("Active token not found");
+                return BadRequest(apiResponse);
             }
 
             token.IsActive = false;

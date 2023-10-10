@@ -20,16 +20,14 @@ namespace HotelManagment_API.Controllers
         private readonly ITokenService _tokenService;
         private readonly ITokenRepository _tokenRepo;
         private readonly IMapper _mapper;
-        private readonly IConfiguration _configuration;
 
-        public AccountAPIController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService, ITokenRepository tokenRepo, IMapper mapper, IConfiguration configuration)
+        public AccountAPIController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITokenService tokenService, ITokenRepository tokenRepo, IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _tokenService = tokenService;
             _tokenRepo = tokenRepo;
             _mapper = mapper;
-            _configuration = configuration;
         }
 
         [HttpPost("register")]

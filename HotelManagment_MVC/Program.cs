@@ -29,6 +29,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IBaseService, BaseService>();
 
 var app = builder.Build();

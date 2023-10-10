@@ -42,8 +42,11 @@ namespace HotelManagment_MVC.Services
                 if (httpRespMess.IsSuccessStatusCode)
                 {
                     var apiResponse = JsonConvert.DeserializeObject<APIResponse<T>>(await httpRespMess.Content.ReadAsStringAsync());
-                    response.Result = apiResponse.Result;
-                    response.IsSuccess = apiResponse.IsSuccess;
+                    if (apiResponse != null)
+                    {
+                        response.Result = apiResponse.Result;
+                    }
+                    response.IsSuccess = true;
                 }
                 else
                 {
@@ -52,12 +55,9 @@ namespace HotelManagment_MVC.Services
                     {
                         response.Result = apiResponse.Result;
                         response.ErrorMessages = apiResponse.ErrorMessages;
-                        response.IsSuccess = apiResponse.IsSuccess;
-                    }
-                    else
-                    {
                         response.AddErrorMessage($"API request failed with statusCode: {response.StatusCode}");
                     }
+                    response.IsSuccess = false;
                     _logger.LogError($"API request failed with statusCode: {response.StatusCode}");
                 }
                 return response;
