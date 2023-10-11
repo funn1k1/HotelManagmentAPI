@@ -117,7 +117,7 @@ namespace HotelManagment_MVC.Controllers
             if (!apiResponse.IsSuccess)
             {
                 AddModelErrors(apiResponse.ErrorMessages);
-                return View(nameof(HomeController.Index), "Home");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
 
             await HttpContext.SignOutAsync();

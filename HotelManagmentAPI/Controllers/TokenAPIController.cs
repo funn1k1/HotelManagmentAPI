@@ -28,6 +28,7 @@ namespace HotelManagment_API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RefreshTokenAsync(TokenDTO tokenDto)
         {
+            var apiResponse = new APIResponse<TokenDTO>();
             var accessToken = tokenDto.AccessToken;
             var refreshToken = tokenDto.RefreshToken;
 
@@ -38,7 +39,9 @@ namespace HotelManagment_API.Controllers
             var oldToken = await _tokenRepo.GetAsync(t => t.UserName == userName && t.IsActive);
             if (oldToken == null || oldToken.RefreshToken != refreshToken || oldToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
-                return BadRequest("Refresh token not found or date expired");
+                apiResponse.StatusCode = HttpStatusCode.InternalServerError;
+                apiResponse.ErrorMessages.Add("Refresh token not found or date expired");
+                return StatusCode(StatusCodes.Status500InternalServerError, apiResponse);
             }
 
             oldToken.IsActive = false;
@@ -60,7 +63,10 @@ namespace HotelManagment_API.Controllers
 
             tokenDto.AccessToken = newAccessToken;
             tokenDto.RefreshToken = newRefreshToken;
-            return Ok(tokenDto);
+            apiResponse.StatusCode = HttpStatusCode.OK;
+            apiResponse.IsSuccess = true;
+            apiResponse.Result = tokenDto;
+            return Ok(apiResponse);
         }
 
         [Authorize]

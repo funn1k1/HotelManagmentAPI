@@ -44,7 +44,6 @@ namespace HotelManagment_API.Controllers.v2
             return Ok(response);
         }
 
-        [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{id:int}", Name = "GetRoom")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -41,6 +41,7 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = configuration["Jwt:Audience"],
             ValidateAudience = true,
             ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
         };
     });
 builder.Services.AddAuthorization();

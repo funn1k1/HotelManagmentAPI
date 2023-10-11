@@ -31,5 +31,22 @@ namespace HotelManagment_MVC.Services
 
             return await _baseService.SendAsync<T, string>(apiRequest, bearerExists: true);
         }
+
+        public async Task<APIResponse<T>> RefreshTokenAsync<T, K>(K entity)
+        {
+            var apiRequest = new APIRequest<K>
+            {
+                Data = entity,
+                Method = APIHttpMethod.POST,
+                Headers = new Dictionary<string, string>
+                {
+                    { "Content-Type", "application/json" },
+                    { "Accept", "application/json" }
+                },
+                Url = $"{_apiUrl}/refresh"
+            };
+
+            return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
+        }
     }
 }
