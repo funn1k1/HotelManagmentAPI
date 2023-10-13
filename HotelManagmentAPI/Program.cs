@@ -1,4 +1,6 @@
 using System.Text;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using HotelManagment_API;
 using HotelManagment_API.Data;
 using HotelManagment_API.Models;
@@ -9,8 +11,6 @@ using HotelManagment_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -83,11 +83,11 @@ builder.Services.AddApiVersioning(options =>
         new HeaderApiVersionReader("x-api-version"),
         new MediaTypeApiVersionReader("x-api-version")
     );
-});
-builder.Services.AddVersionedApiExplorer(options =>
+}).AddApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
+    options.AddApiVersionParametersWhenVersionNeutral = true;
 });
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
@@ -116,7 +116,7 @@ if (app.Environment.IsDevelopment())
 
 // Initialize the database
 await InitDb(app);
-
+app.UseExceptionHandler("/ErrorHandling/handleError");
 //app.UseSerilogRequestLogging();
 app.UseStaticFiles();
 app.UseCors();

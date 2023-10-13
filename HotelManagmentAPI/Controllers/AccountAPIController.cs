@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using Asp.Versioning;
 using AutoMapper;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Account;
@@ -28,6 +29,12 @@ namespace HotelManagment_API.Controllers
             _tokenService = tokenService;
             _tokenRepo = tokenRepo;
             _mapper = mapper;
+        }
+
+        [HttpGet("error")]
+        public async Task<IActionResult> Error()
+        {
+            throw new FileNotFoundException();
         }
 
         [HttpPost("register")]

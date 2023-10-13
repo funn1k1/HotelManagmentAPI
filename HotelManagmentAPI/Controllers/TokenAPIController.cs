@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using Asp.Versioning;
 using HotelManagment_API.Models;
 using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_API.Repository.Interfaces;
