@@ -31,10 +31,18 @@ namespace HotelManagment_API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("error")]
-        public async Task<IActionResult> Error()
+        [HttpGet("fileError")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> FileError()
         {
             throw new FileNotFoundException();
+        }
+
+        [HttpGet("imageError")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ImageError()
+        {
+            throw new BadImageFormatException();
         }
 
         [HttpPost("register")]

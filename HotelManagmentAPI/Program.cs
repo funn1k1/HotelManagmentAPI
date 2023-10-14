@@ -3,6 +3,7 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using HotelManagment_API;
 using HotelManagment_API.Data;
+using HotelManagment_API.Middlewares;
 using HotelManagment_API.Models;
 using HotelManagment_API.Repository;
 using HotelManagment_API.Repository.Interfaces;
@@ -63,10 +64,20 @@ builder.Services.AddControllers(options =>
     {
         options.CacheProfiles.Add(profile.Key, profile.Get<CacheProfile>());
     }
+
     //options.ReturnHttpNotAcceptable = true;
+
+    // Add filters
+    //options.Filters.Add<CustomExceptionFilter>();
 }).AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-);/*.AddXmlDataContractSerializerFormatters();*/
+).ConfigureApiBehaviorOptions(options =>
+{
+    //options.ClientErrorMapping[StatusCodes.Status500InternalServerError] = new ClientErrorData
+    //{
+    //    Link = "https://github.com/funn1k1/HotelManagmentAPI"
+    //};
+});/*.AddXmlDataContractSerializerFormatters();*/
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -116,7 +127,9 @@ if (app.Environment.IsDevelopment())
 
 // Initialize the database
 await InitDb(app);
-app.UseExceptionHandler("/ErrorHandling/handleError");
+//app.UseExceptionHandler("/ErrorHandling/handleError");
+//app.HandleException(builder.Environment.IsDevelopment());
+app.UseMiddleware<CustomExceptionMiddleware>();
 //app.UseSerilogRequestLogging();
 app.UseStaticFiles();
 app.UseCors();
@@ -143,3 +156,31 @@ static async Task InitDb(IApplicationBuilder app)
         }
     }
 }
+
+//void HandleException(IApplicationBuilder app)
+//{
+//    app.Run(async context =>
+//    {
+//        context.Response.ContentType = "application/json";
+//        var feature = context.Features.GetRequiredFeature<IExceptionHandlerFeature>();
+//        if (builder.Environment.IsDevelopment())
+//        {
+//            var response = new
+//            {
+//                context.Response.StatusCode,
+//                Title = "Hello from Exception Handler [Development]",
+//                feature.Error.StackTrace
+//            };
+//            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+//        }
+//        else
+//        {
+//            var response = new
+//            {
+//                context.Response.StatusCode,
+//                Title = "Hello from Exception Handler [Production]"
+//            };
+//            await context.Response.WriteAsync(JsonConvert.SerializeObject(response));
+//        }
+//    });
+//}
