@@ -8,9 +8,9 @@ namespace HotelManagment_API.Repository
     {
         public TokenRepository(ApplicationDbContext db) : base(db) { }
 
-        public async Task UpdateAsync(Token tokens)
+        public async Task UpdateAsync(Token token)
         {
-            _db.Update(tokens);
+            _db.Update(token);
             await SaveAsync();
         }
 

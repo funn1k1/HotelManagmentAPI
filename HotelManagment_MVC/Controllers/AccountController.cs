@@ -112,8 +112,7 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            var userName = User.Identity?.Name;
-            var apiResponse = await _tokenService.RevokeTokenAsync<Token>(userName);
+            var apiResponse = await _tokenService.RevokeTokenAsync<Token>();
             if (!apiResponse.IsSuccess)
             {
                 AddModelErrors(apiResponse.ErrorMessages);

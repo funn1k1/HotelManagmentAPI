@@ -19,11 +19,11 @@ namespace HotelManagment_API.Middlewares
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex, env);
+                await HandleExceptionAsync(ex, context, env);
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception ex, IHostEnvironment env)
+        private static async Task HandleExceptionAsync(Exception ex, HttpContext context, IHostEnvironment env)
         {
             context.Response.ContentType = "application/json";
             if (env.IsDevelopment())

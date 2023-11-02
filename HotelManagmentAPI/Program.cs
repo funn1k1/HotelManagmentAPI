@@ -19,6 +19,8 @@ using Newtonsoft.Json;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -44,7 +46,6 @@ builder.Services.AddAuthorization();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
 );
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Repositories
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
@@ -81,9 +82,7 @@ builder.Services.AddControllers(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-// Add JWT authorization
 builder.Services.AddSwaggerGen();
-// Add API versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -143,17 +142,13 @@ app.Run();
 
 static async Task InitDb(IApplicationBuilder app)
 {
-    using (var scope = app.ApplicationServices.CreateScope())
+    try
     {
-        var services = scope.ServiceProvider;
-        try
-        {
-            await DbInitializer.InitAsync(app);
-        }
-        catch
-        {
-            // Some logic to handle errors
-        }
+        await DbInitializer.InitAsync(app);
+    }
+    catch
+    {
+        // Some logic to handle errors
     }
 }
 

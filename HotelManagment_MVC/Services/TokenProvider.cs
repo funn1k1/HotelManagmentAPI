@@ -15,23 +15,31 @@ namespace HotelManagment_MVC.Services
 
         public TokenDTO GetToken()
         {
-            if (
-                _accessor.HttpContext != null &&
-                _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.AccessToken, out var accessToken) &&
-                _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.RefreshToken, out var refreshToken)
-            )
+            if (_accessor.HttpContext == null)
+            {
+                return new TokenDTO();
+            }
+
+            if (_accessor.HttpContext.Request.Cookies.TryGetValue(Constants.AccessToken, out var accessToken) &&
+                _accessor.HttpContext.Request.Cookies.TryGetValue(Constants.RefreshToken, out var refreshToken))
             {
                 return new TokenDTO { AccessToken = accessToken, RefreshToken = refreshToken };
             };
+
+            if (_accessor.HttpContext.Request.Cookies.TryGetValue(Constants.RefreshToken, out refreshToken))
+            {
+                return new TokenDTO { RefreshToken = refreshToken };
+            }
+
             return new TokenDTO();
         }
 
         public void SetToken(TokenDTO tokenDto)
         {
-            var accessCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(60) };
-            var refreshCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddDays(1) };
-            _accessor.HttpContext?.Response.Cookies.Append(Constants.AccessToken, tokenDto.AccessToken, accessCookieOptions);
-            _accessor.HttpContext?.Response.Cookies.Append(Constants.RefreshToken, tokenDto.RefreshToken, refreshCookieOptions);
+            //var accessCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(1) };
+            //var refreshCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddDays(1) };
+            _accessor.HttpContext?.Response.Cookies.Append(Constants.AccessToken, tokenDto.AccessToken);
+            _accessor.HttpContext?.Response.Cookies.Append(Constants.RefreshToken, tokenDto.RefreshToken);
         }
 
         public void DeleteToken()

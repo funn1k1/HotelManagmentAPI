@@ -101,52 +101,60 @@ namespace HotelManagment_API.Controllers
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginAsync(UserLoginDTO loginDto)
         {
-            var apiResponse = new APIResponse<TokenDTO>();
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
-            if (user == null)
+            try
             {
-                apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                apiResponse.AddErrorMessage("Username does not exist");
-                return BadRequest(apiResponse);
-            }
+                var apiResponse = new APIResponse<TokenDTO>();
+                var user = await _userManager.FindByNameAsync(loginDto.UserName);
+                if (user == null)
+                {
+                    apiResponse.StatusCode = HttpStatusCode.BadRequest;
+                    apiResponse.AddErrorMessage("Username does not exist");
+                    return BadRequest(apiResponse);
+                }
 
-            var isValidPass = await _userManager.CheckPasswordAsync(user, loginDto.Password);
-            if (!isValidPass)
-            {
-                apiResponse.StatusCode = HttpStatusCode.BadRequest;
-                apiResponse.AddErrorMessage("Password is not correct");
-                return BadRequest(apiResponse);
-            }
+                var isValidPass = await _userManager.CheckPasswordAsync(user, loginDto.Password);
+                if (!isValidPass)
+                {
+                    apiResponse.StatusCode = HttpStatusCode.BadRequest;
+                    apiResponse.AddErrorMessage("Password is not correct");
+                    return BadRequest(apiResponse);
+                }
 
-            var oldToken = await _tokenRepo.GetAsync(t => t.UserName == loginDto.UserName && t.IsActive);
-            if (oldToken != null)
-            {
-                oldToken.IsActive = false;
-            }
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Role, (await _userManager.GetRolesAsync(user)).FirstOrDefault()),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-            var newToken = new Token
-            {
-                UserName = user.UserName,
-                AccessToken = _tokenService.GenerateAccessToken(claims),
-                RefreshToken = _tokenService.GenerateRefreshToken(),
-                RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30)
-            };
-            await _tokenRepo.AddAsync(newToken);
+                var oldToken = await _tokenRepo.GetAsync(t => t.UserName == loginDto.UserName && t.IsActive);
+                if (oldToken != null)
+                {
+                    oldToken.IsActive = false;
+                }
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Role, (await _userManager.GetRolesAsync(user)).FirstOrDefault()),
+                    new Claim(ClaimTypes.Name, user.UserName)
+                };
+                var newToken = new Token
+                {
+                    UserName = user.UserName,
+                    AccessToken = _tokenService.GenerateAccessToken(claims),
+                    RefreshToken = _tokenService.GenerateRefreshToken(),
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(1)
+                };
+                await _tokenRepo.AddAsync(newToken);
 
-            apiResponse.Result = new TokenDTO
+                apiResponse.Result = new TokenDTO
+                {
+                    AccessToken = newToken.AccessToken,
+                    RefreshToken = newToken.RefreshToken
+                };
+                apiResponse.StatusCode = HttpStatusCode.OK;
+                apiResponse.IsSuccess = true;
+                return Ok(apiResponse);
+            }
+            catch
             {
-                AccessToken = newToken.AccessToken,
-                RefreshToken = newToken.RefreshToken
-            };
-            apiResponse.StatusCode = HttpStatusCode.OK;
-            apiResponse.IsSuccess = true;
-            return Ok(apiResponse);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while adding the token");
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using HotelManagment_MVC.Services.Interfaces;
-using HotelManagment_Utility.Enums;
+using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 
 namespace HotelManagment_MVC.Services
 {
@@ -15,12 +15,11 @@ namespace HotelManagment_MVC.Services
                 $"{configuration.GetValue<string>("HotelManagment_API:TokenApiUrl")}";
         }
 
-        public async Task<APIResponse<T>> RevokeTokenAsync<T>(string userName)
+        public async Task<APIResponse<T>> RevokeTokenAsync<T>()
         {
             var apiRequest = new APIRequest<string>
             {
-                Data = userName,
-                Method = APIHttpMethod.POST,
+                Method = HttpMethod.Post,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -37,7 +36,7 @@ namespace HotelManagment_MVC.Services
             var apiRequest = new APIRequest<K>
             {
                 Data = entity,
-                Method = APIHttpMethod.POST,
+                Method = HttpMethod.Post,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },

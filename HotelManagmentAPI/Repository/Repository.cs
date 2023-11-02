@@ -18,7 +18,7 @@ namespace HotelManagment_API.Repository
 
         public async Task AddAsync(T entity)
         {
-            _dbSet.Add(entity);
+            await _dbSet.AddAsync(entity);
             await SaveAsync();
         }
 
@@ -95,14 +95,7 @@ namespace HotelManagment_API.Repository
 
         public async Task SaveAsync()
         {
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new Exception("Error when saving data", ex);
-            }
+            await _db.SaveChangesAsync();
         }
     }
 }

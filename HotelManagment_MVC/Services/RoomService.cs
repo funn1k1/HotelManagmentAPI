@@ -1,6 +1,6 @@
 ﻿using HotelManagment_MVC.Models.DTO.Room;
 using HotelManagment_MVC.Services.Interfaces;
-using HotelManagment_Utility.Enums;
+using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 
 namespace HotelManagment_MVC.Services
 {
@@ -21,7 +21,7 @@ namespace HotelManagment_MVC.Services
             var apiRequest = new APIRequest<K>()
             {
                 Data = roomDto,
-                Method = APIHttpMethod.POST,
+                Method = HttpMethod.Post,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -32,11 +32,11 @@ namespace HotelManagment_MVC.Services
             return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
         }
 
-        public async Task<APIResponse<T>> DeleteAsync<T, K>(K id)
+        public async Task<APIResponse<T>> DeleteAsync<T>(int id)
         {
-            var apiRequest = new APIRequest<K>()
+            var apiRequest = new APIRequest<int>()
             {
-                Method = APIHttpMethod.DELETE,
+                Method = HttpMethod.Delete,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -44,14 +44,14 @@ namespace HotelManagment_MVC.Services
                 },
                 Url = $"{_apiUrl}/{id}",
             };
-            return await _baseService.SendAsync<T, K>(apiRequest, bearerExists: true);
+            return await _baseService.SendAsync<T, int>(apiRequest, bearerExists: true);
         }
 
         public async Task<APIResponse<T>> GetAllAsync<T>()
         {
             var apiRequest = new APIRequest<T>()
             {
-                Method = APIHttpMethod.GET,
+                Method = HttpMethod.Get,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -62,11 +62,11 @@ namespace HotelManagment_MVC.Services
             return await _baseService.SendAsync<T, T>(apiRequest);
         }
 
-        public async Task<APIResponse<T>> GetAsync<T, K>(K id)
+        public async Task<APIResponse<T>> GetAsync<T>(int id)
         {
-            var apiRequest = new APIRequest<K>()
+            var apiRequest = new APIRequest<int>()
             {
-                Method = APIHttpMethod.GET,
+                Method = HttpMethod.Get,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -74,7 +74,7 @@ namespace HotelManagment_MVC.Services
                 },
                 Url = $"{_apiUrl}/{id}"
             };
-            return await _baseService.SendAsync<T, K>(apiRequest);
+            return await _baseService.SendAsync<T, int>(apiRequest);
         }
 
         public async Task<APIResponse<T>> UpdateAsync<T, K>(K roomDto) where K : RoomUpdateDTO
@@ -82,7 +82,7 @@ namespace HotelManagment_MVC.Services
             var apiRequest = new APIRequest<K>()
             {
                 Data = roomDto,
-                Method = APIHttpMethod.PUT,
+                Method = HttpMethod.Put,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },

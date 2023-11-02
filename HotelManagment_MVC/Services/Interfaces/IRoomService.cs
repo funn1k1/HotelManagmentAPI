@@ -6,12 +6,12 @@ namespace HotelManagment_MVC.Services.Interfaces
     {
         Task<APIResponse<T>> GetAllAsync<T>();
 
-        Task<APIResponse<T>> GetAsync<T, K>(K id);
+        Task<APIResponse<T>> GetAsync<T>(int id);
 
         Task<APIResponse<T>> CreateAsync<T, K>(K entity);
 
         Task<APIResponse<T>> UpdateAsync<T, K>(K entity) where K : RoomUpdateDTO;
 
-        Task<APIResponse<T>> DeleteAsync<T, K>(K id);
+        Task<APIResponse<T>> DeleteAsync<T>(int id);
     }
 }

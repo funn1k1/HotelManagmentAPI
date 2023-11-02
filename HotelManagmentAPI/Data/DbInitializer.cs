@@ -9,11 +9,11 @@ namespace HotelManagment_API.Data
     {
         public static async Task InitAsync(IApplicationBuilder appBuilder)
         {
-            using (var serviceScope = appBuilder.ApplicationServices.CreateScope())
+            using (var scope = appBuilder.ApplicationServices.CreateScope())
             {
-                var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                if (!(await dbContext.Database.GetPendingMigrationsAsync()).Any())
+                if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
                 {
                     await dbContext.Database.MigrateAsync();
                 }

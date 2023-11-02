@@ -1,5 +1,5 @@
 ﻿using HotelManagment_MVC.Services.Interfaces;
-using HotelManagment_Utility.Enums;
+using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 
 namespace HotelManagment_MVC.Services
 {
@@ -25,7 +25,7 @@ namespace HotelManagment_MVC.Services
                     { "Content-Type", "application/json" },
                     { "Accept", "application/json" }
                 },
-                Method = APIHttpMethod.POST,
+                Method = HttpMethod.Post,
                 Url = $"{_apiUrl}/register"
             };
 
@@ -42,7 +42,7 @@ namespace HotelManagment_MVC.Services
                     { "Content-Type", "application/json" },
                     { "Accept", "application/json" }
                 },
-                Method = APIHttpMethod.POST,
+                Method = HttpMethod.Post,
                 Url = $"{_apiUrl}/login"
             };
             return await _baseService.SendAsync<T, K>(apiRequest);

@@ -1,22 +1,22 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using HotelManagment_MVC.Models;
 using HotelManagment_MVC.Models.DTO.Account;
 using HotelManagment_MVC.Services.Interfaces;
-using HotelManagment_Utility.Enums;
 using Newtonsoft.Json;
 
 namespace HotelManagment_MVC.Services
 {
     public class BaseService : IBaseService
     {
-        private readonly IHttpClientFactory _httlClientFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<BaseService> _logger;
         private readonly ITokenProvider _tokenProvider;
 
         public BaseService(IHttpClientFactory httlClientFactory, ILogger<BaseService> logger, ITokenProvider tokenProvider)
         {
-            _httlClientFactory = httlClientFactory;
+            _httpClientFactory = httlClientFactory;
             _logger = logger;
             _tokenProvider = tokenProvider;
         }
@@ -25,18 +25,27 @@ namespace HotelManagment_MVC.Services
         {
             try
             {
-                var httpClient = _httlClientFactory.CreateClient("HotelManagment_API");
+                var httpClient = _httpClientFactory.CreateClient("HotelManagment_API");
 
                 var httpReqMess = BuildRequestAsync(apiRequest, bearerExists);
 
                 var httpRespMess = await httpClient.SendAsync(httpReqMess);
-                if (bearerExists && !string.IsNullOrEmpty(_tokenProvider.GetToken().AccessToken) &&
-                    httpRespMess.StatusCode == HttpStatusCode.Unauthorized
-                )
+                if (!string.IsNullOrEmpty(_tokenProvider.GetToken().RefreshToken) &&
+                    httpRespMess.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    var token = await RefreshTokenAsync(httpClient);
-                    var tokenReqMess = BuildRequestAsync(apiRequest, false);
-                    tokenReqMess.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+                    var tokenDto = await RefreshTokenAsync(httpClient);
+                    if (tokenDto == null)
+                    {
+                        await RevokeTokenAsync(httpClient);
+                        return new APIResponse<T>
+                        {
+                            IsSuccess = false,
+                            ErrorMessages = new List<string> { "Unauthorized" }
+                        };
+                    }
+
+                    _tokenProvider.SetToken(tokenDto);
+                    var tokenReqMess = BuildRequestAsync(apiRequest, bearerExists);
                     httpRespMess = await httpClient.SendAsync(tokenReqMess);
                 }
 
@@ -93,13 +102,13 @@ namespace HotelManagment_MVC.Services
             }
         }
 
-        private async Task<TokenDTO> RefreshTokenAsync(HttpClient httpClient)
+        private async Task<TokenDTO?> RefreshTokenAsync(HttpClient httpClient)
         {
             var oldTokenDto = _tokenProvider.GetToken();
             var apiRequest = new APIRequest<TokenDTO>
             {
                 Data = oldTokenDto,
-                Method = APIHttpMethod.POST,
+                Method = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod.Post,
                 Headers = new Dictionary<string, string>
                 {
                     { "Content-Type", "application/json" },
@@ -111,15 +120,28 @@ namespace HotelManagment_MVC.Services
             var httpReqMess = BuildRequestAsync(apiRequest);
             var httpRespMess = await httpClient.SendAsync(httpReqMess);
             var apiResponse = await ProcessResponseAsync<TokenDTO>(httpRespMess);
-            if (apiResponse.IsSuccess && apiResponse.Result != null)
+
+            return apiResponse.Result;
+        }
+
+        private async Task<Token?> RevokeTokenAsync(HttpClient httpClient)
+        {
+            var apiRequest = new APIRequest<TokenDTO>
             {
-                _tokenProvider.DeleteToken();
-                _tokenProvider.SetToken(apiResponse.Result);
+                Method = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod.Post,
+                Headers = new Dictionary<string, string>
+                {
+                    { "Content-Type", "application/json" },
+                    { "Accept", "application/json" }
+                },
+                Url = "https://localhost:7238/api/v2/TokenAPI/revoke"
+            };
 
-                return apiResponse.Result;
-            }
+            var httpReqMess = BuildRequestAsync(apiRequest);
+            var httpRespMess = await httpClient.SendAsync(httpReqMess);
+            var apiResponse = await ProcessResponseAsync<Token>(httpRespMess);
 
-            return new TokenDTO();
+            return apiResponse.Result;
         }
 
         private HttpRequestMessage BuildRequestAsync<K>(APIRequest<K> apiRequest, bool bearerExists = false)

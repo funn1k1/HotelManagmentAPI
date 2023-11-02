@@ -30,64 +30,89 @@ namespace HotelManagment_API.Controllers.v2
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse<List<HotelDTO>>>> GetHotelsAsync(int pageNumber, int pageSize)
         {
-            var response = new APIResponse<List<HotelDTO>>
+            try
             {
-                IsSuccess = true,
-                Result = _mapper.Map<List<HotelDTO>>(
-                    await _hotelRepo.GetAllAsync(includeProperties: h => h.Rooms, isTracked: false, pageNumber: pageNumber, pageSize: pageSize)
-                ),
-                StatusCode = HttpStatusCode.OK
-            };
-            var pagination = new
+                var response = new APIResponse<List<HotelDTO>>
+                {
+                    IsSuccess = true,
+                    Result = _mapper.Map<List<HotelDTO>>(
+                        await _hotelRepo.GetAllAsync(includeProperties: h => h.Rooms, isTracked: false, pageNumber: pageNumber, pageSize: pageSize)
+                    ),
+                    StatusCode = HttpStatusCode.OK
+                };
+                var pagination = new
+                {
+                    pageNumber,
+                    pageSize,
+                };
+                Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination));
+                return Ok(response);
+            }
+            catch
             {
-                pageNumber,
-                pageSize,
-            };
-            Response.Headers.Add("x-pagination", JsonConvert.SerializeObject(pagination));
-            return Ok(response);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while getting hotels");
+            }
+
         }
 
         [HttpGet("{id:int}", Name = "GetHotel")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelAsync(int id)
         {
-            var response = new APIResponse<HotelDTO>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
-            if (hotel == null)
+            try
             {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.AddErrorMessage("Hotel not found");
-                return NotFound(response);
-            }
+                var response = new APIResponse<HotelDTO>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
+                if (hotel == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
+                    return NotFound(response);
+                }
 
-            response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.IsSuccess = true;
-            response.StatusCode = HttpStatusCode.OK;
-            return Ok(response);
+                response.Result = _mapper.Map<HotelDTO>(hotel);
+                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while getting the hotel");
+            }
         }
 
         [ResponseCache(CacheProfileName = "Cache2Min")]
         [HttpGet("{name}", Name = "GetHotelByName")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse<HotelDTO>>> GetHotelByNameAsync(string name)
         {
-            var response = new APIResponse<HotelDTO>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Name.ToLower() == name.ToLower(), includeProperties: h => h.Rooms);
-            if (hotel == null)
+            try
             {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.AddErrorMessage("Hotel not found");
-                return NotFound(response);
-            }
+                var response = new APIResponse<HotelDTO>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Name.ToLower() == name.ToLower(), includeProperties: h => h.Rooms);
+                if (hotel == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
+                    return NotFound(response);
+                }
 
-            response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.IsSuccess = true;
-            response.StatusCode = HttpStatusCode.OK;
-            return Ok(response);
+                response.Result = _mapper.Map<HotelDTO>(hotel);
+                response.IsSuccess = true;
+                response.StatusCode = HttpStatusCode.OK;
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while getting the hotel by name");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -96,6 +121,7 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> CreateHotelAsync([FromForm] HotelCreateDTO hotelDto)
         {
             try
@@ -121,9 +147,9 @@ namespace HotelManagment_API.Controllers.v2
                 response.Result = newHotel;
                 return CreatedAtRoute("GetHotel", new { id = response.Result.Id }, response);
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while creating a hotel");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while creating the hotel");
             }
         }
 
@@ -133,54 +159,71 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteHotelAsync(int id)
         {
-            var response = new APIResponse<HotelDTO>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Id == id);
-            if (hotel == null)
+            try
             {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.AddErrorMessage("Hotel not found");
-                return NotFound(response);
+                var response = new APIResponse<HotelDTO>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Id == id);
+                if (hotel == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
+                    return NotFound(response);
+                }
+
+                if (!string.IsNullOrEmpty(hotel.ImageUrl))
+                {
+                    _imageService.Delete(hotel.ImageUrl);
+                }
+                await _hotelRepo.DeleteAsync(hotel);
+
+                response.Result = _mapper.Map<HotelDTO>(hotel);
+                response.StatusCode = HttpStatusCode.OK;
+                response.IsSuccess = true;
+                return Ok(response);
+            }
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while deleting the hotel");
             }
 
-            if (!string.IsNullOrEmpty(hotel.ImageUrl))
-            {
-                _imageService.Delete(hotel.ImageUrl);
-            }
-            await _hotelRepo.DeleteAsync(hotel);
-
-            response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.OK;
-            response.IsSuccess = true;
-            return Ok(response);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateHotelAsync(int id, [FromForm] HotelUpdateDTO hotelDto)
         {
-            var response = new APIResponse<HotelDTO>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
-            if (hotel == null)
+            try
             {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.AddErrorMessage("Hotel not found");
-                return NotFound(response);
+                var response = new APIResponse<HotelDTO>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
+                if (hotel == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
+                    return NotFound(response);
+                }
+
+                hotelDto.ImageUrl = await _imageService.UpdateAsync(hotelDto.ImageFile, hotel.ImageUrl) ?? hotelDto.ImageUrl;
+                _mapper.Map(hotelDto, hotel);
+                await _hotelRepo.UpdateAsync(hotel);
+
+                response.Result = _mapper.Map<HotelDTO>(hotel);
+                response.StatusCode = HttpStatusCode.OK;
+                response.IsSuccess = true;
+                return Ok(response);
             }
-
-            hotelDto.ImageUrl = await _imageService.UpdateAsync(hotelDto.ImageFile, hotel.ImageUrl) ?? hotelDto.ImageUrl;
-            _mapper.Map(hotelDto, hotel);
-            await _hotelRepo.UpdateAsync(hotel);
-
-            response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.OK;
-            response.IsSuccess = true;
-            return Ok(response);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while updating the hotel");
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -189,26 +232,34 @@ namespace HotelManagment_API.Controllers.v2
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateHotelAsync(int id, [FromBody] JsonPatchDocument<HotelUpdateDTO> patchDto)
         {
-            var response = new APIResponse<HotelDTO>();
-            var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
-            if (hotel == null)
+            try
             {
-                response.StatusCode = HttpStatusCode.NotFound;
-                response.AddErrorMessage("Hotel not found");
-                return NotFound(response);
+                var response = new APIResponse<HotelDTO>();
+                var hotel = await _hotelRepo.GetAsync(h => h.Id == id, includeProperties: h => h.Rooms);
+                if (hotel == null)
+                {
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
+                    return NotFound(response);
+                }
+
+                var hotelUpdateDto = _mapper.Map<HotelUpdateDTO>(hotel);
+                patchDto.ApplyTo(hotelUpdateDto);
+                _mapper.Map(hotelUpdateDto, hotel);
+                await _hotelRepo.UpdateAsync(hotel);
+
+                response.Result = _mapper.Map<HotelDTO>(hotel);
+                response.StatusCode = HttpStatusCode.OK;
+                response.IsSuccess = true;
+                return Ok(response);
             }
-
-            var hotelUpdateDto = _mapper.Map<HotelUpdateDTO>(hotel);
-            patchDto.ApplyTo(hotelUpdateDto);
-            _mapper.Map(hotelUpdateDto, hotel);
-            await _hotelRepo.UpdateAsync(hotel);
-
-            response.Result = _mapper.Map<HotelDTO>(hotel);
-            response.StatusCode = HttpStatusCode.OK;
-            response.IsSuccess = true;
-            return Ok(response);
+            catch
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured during a partial update of the hotel");
+            }
         }
     }
 }

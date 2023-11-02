@@ -96,7 +96,7 @@ namespace HotelManagment_MVC.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id)
         {
-            var getRoomResp = await _roomService.GetAsync<RoomUpdateDTO, int>(id);
+            var getRoomResp = await _roomService.GetAsync<RoomUpdateDTO>(id);
             if (!getRoomResp.IsSuccess)
             {
                 AddModelErrors(getRoomResp.ErrorMessages);
@@ -134,7 +134,7 @@ namespace HotelManagment_MVC.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            var getRoomResp = await _roomService.GetAsync<RoomDTO, int>(id);
+            var getRoomResp = await _roomService.GetAsync<RoomDTO>(id);
             if (!getRoomResp.IsSuccess)
             {
                 AddModelErrors(getRoomResp.ErrorMessages);
@@ -153,7 +153,7 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PostDelete(int id)
         {
-            var deleteRoomResp = await _roomService.DeleteAsync<RoomDTO, int>(id);
+            var deleteRoomResp = await _roomService.DeleteAsync<RoomDTO>(id);
             if (!deleteRoomResp.IsSuccess)
             {
                 AddModelErrors(deleteRoomResp.ErrorMessages);

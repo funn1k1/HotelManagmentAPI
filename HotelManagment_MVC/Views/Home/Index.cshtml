@@ -5,7 +5,7 @@
 
 @if (Model.Hotels != null)
 {
-    @if (Model.Hotels.Count <= 0)
+    @if (!Model.Hotels.Any())
     {
         <h2 class="text-info">No Hotels</h2>
     }
@@ -16,7 +16,7 @@
             {
                 <div class="col h-100">
                     <div class="card h-100">
-                        <img src="@hotel.ImageUrl" asp-append-version="true" class="card-img-top" alt="@hotel.Name">
+                        <img src="@hotel.ImageUrl" class="card-img-top" alt="@hotel.Name">
                         <div class="card-body">
                             <h5 class="card-title">@hotel.Name</h5>
                             <p class="card-text">@hotel.Description</p>

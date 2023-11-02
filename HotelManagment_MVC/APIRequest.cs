@@ -1,10 +1,10 @@
-﻿using HotelManagment_Utility.Enums;
+﻿using HttpMethod = Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpMethod;
 
 namespace HotelManagment_MVC
 {
     public class APIRequest<T>
     {
-        public APIHttpMethod Method { get; set; }
+        public HttpMethod Method { get; set; }
 
         public T? Data { get; set; }
 
