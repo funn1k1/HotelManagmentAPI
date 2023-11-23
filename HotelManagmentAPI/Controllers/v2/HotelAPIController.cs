@@ -43,6 +43,7 @@ namespace HotelManagment_API.Controllers.v2
                     ),
                     StatusCode = HttpStatusCode.OK
                 };
+
                 var pagination = new
                 {
                     pageNumber,
@@ -55,7 +56,6 @@ namespace HotelManagment_API.Controllers.v2
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while getting hotels");
             }
-
         }
 
         [HttpGet("{id:int}", Name = "GetHotel")]

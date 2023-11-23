@@ -36,6 +36,9 @@ namespace HotelManagment_MVC.Services
 
         public void SetToken(TokenDTO tokenDto)
         {
+            Console.WriteLine($"Setting AccessToken: {tokenDto.AccessToken}");
+            Console.WriteLine($"Setting RefreshToken: {tokenDto.RefreshToken}");
+
             //var accessCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(1) };
             //var refreshCookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddDays(1) };
             _accessor.HttpContext?.Response.Cookies.Append(Constants.AccessToken, tokenDto.AccessToken);

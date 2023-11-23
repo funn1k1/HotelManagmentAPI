@@ -44,14 +44,14 @@ namespace HotelManagment_API.Repository
                 query = query.AsNoTracking();
             }
 
-            if (pageSize > 0 && pageNumber > 0)
-            {
-                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
-            }
-
             if (includeProperties != null)
             {
                 query = query.Include(includeProperties);
+            }
+
+            if (pageSize > 0 && pageNumber > 0)
+            {
+                query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
             }
 
             if (filter != null)
@@ -75,14 +75,14 @@ namespace HotelManagment_API.Repository
         {
             IQueryable<T> query = _dbSet.AsQueryable();
 
-            if (includeProperties != null)
-            {
-                query = query.Include(includeProperties);
-            }
-
             if (!isTracked)
             {
                 query = query.AsNoTracking();
+            }
+
+            if (includeProperties != null)
+            {
+                query = query.Include(includeProperties);
             }
 
             if (filter != null)

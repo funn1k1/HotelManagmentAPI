@@ -27,7 +27,6 @@ namespace HotelManagment_API.Controllers
         [HttpPost("refresh")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RefreshTokenAsync(TokenDTO tokenDto)
         {
@@ -66,6 +65,7 @@ namespace HotelManagment_API.Controllers
                 }
 
                 oldToken.IsActive = false;
+                await _tokenRepo.UpdateAsync(oldToken);
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, userName),
@@ -95,7 +95,7 @@ namespace HotelManagment_API.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost("revoke")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

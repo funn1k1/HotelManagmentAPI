@@ -34,7 +34,7 @@ namespace HotelManagment_API
                         {
                             Type = ReferenceType.SecurityScheme,
                             Id = "Bearer"
-                        }
+                        },
                     },
                     new string[] {}
                 }

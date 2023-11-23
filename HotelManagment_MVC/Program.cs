@@ -22,7 +22,6 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
 });
 
-
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAccountService, AccountService>();

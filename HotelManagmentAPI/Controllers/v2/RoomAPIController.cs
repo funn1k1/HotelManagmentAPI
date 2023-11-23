@@ -59,10 +59,7 @@ namespace HotelManagment_API.Controllers.v2
             try
             {
                 var response = new APIResponse<RoomDTO>();
-                var room = await _roomRepo.GetAsync(
-                    r => r.Id == id,
-                    includeProperties: r => r.Hotel
-                );
+                var room = await _roomRepo.GetAsync(r => r.Id == id, includeProperties: r => r.Hotel);
                 if (room == null)
                 {
                     response.StatusCode = HttpStatusCode.NotFound;
@@ -129,12 +126,12 @@ namespace HotelManagment_API.Controllers.v2
                 var hotel = await _hotelRepo.GetAsync(h => h.Id == roomDto.HotelId);
                 if (hotel == null)
                 {
-                    response.StatusCode = HttpStatusCode.BadRequest;
-                    response.AddErrorMessage("Hotel with this id does not exist");
+                    response.StatusCode = HttpStatusCode.NotFound;
+                    response.AddErrorMessage("Hotel not found");
                     return NotFound(response);
                 }
 
-                var room = await _roomRepo.GetAsync(r => r.RoomNumber == roomDto.RoomNumber && r.HotelId == hotel.Id);
+                var room = await _roomRepo.GetAsync(r => r.RoomNumber.ToLower() == roomDto.RoomNumber.ToLower() && r.HotelId == hotel.Id);
                 if (room != null)
                 {
                     //ModelState.AddModelError("Name", "A hotel with this name already exists");

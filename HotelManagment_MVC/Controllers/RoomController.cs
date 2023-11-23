@@ -64,21 +64,20 @@ namespace HotelManagment_MVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoomCreateViewModel roomCreateVM)
         {
-            var getRoomsResp = await _hotelService.GetAllAsync<List<HotelDTO>>();
-            if (!getRoomsResp.IsSuccess)
-            {
-                AddModelErrors(getRoomsResp.ErrorMessages);
-                return View(roomCreateVM);
-            }
-
-            roomCreateVM.Hotels = getRoomsResp.Result.Select(h => new SelectListItem
-            {
-                Text = h.Name,
-                Value = h.Id.ToString()
-            });
-
             if (!ModelState.IsValid)
             {
+                var getHotelsResp = await _hotelService.GetAllAsync<List<HotelDTO>>();
+                if (!getHotelsResp.IsSuccess)
+                {
+                    AddModelErrors(getHotelsResp.ErrorMessages);
+                    return View(roomCreateVM);
+                }
+
+                roomCreateVM.Hotels = getHotelsResp.Result.Select(h => new SelectListItem
+                {
+                    Text = h.Name,
+                    Value = h.Id.ToString()
+                });
                 return View(roomCreateVM);
             }
 

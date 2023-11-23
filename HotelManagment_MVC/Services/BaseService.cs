@@ -13,10 +13,11 @@ namespace HotelManagment_MVC.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<BaseService> _logger;
         private readonly ITokenProvider _tokenProvider;
+        private TokenDTO? newToken;
 
-        public BaseService(IHttpClientFactory httlClientFactory, ILogger<BaseService> logger, ITokenProvider tokenProvider)
+        public BaseService(IHttpClientFactory httpClientFactory, ILogger<BaseService> logger, ITokenProvider tokenProvider)
         {
-            _httpClientFactory = httlClientFactory;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
             _tokenProvider = tokenProvider;
         }
@@ -44,7 +45,8 @@ namespace HotelManagment_MVC.Services
                         };
                     }
 
-                    _tokenProvider.SetToken(tokenDto);
+                    newToken = tokenDto;
+                    _tokenProvider.SetToken(newToken);
                     var tokenReqMess = BuildRequestAsync(apiRequest, bearerExists);
                     httpRespMess = await httpClient.SendAsync(tokenReqMess);
                 }
@@ -157,10 +159,9 @@ namespace HotelManagment_MVC.Services
                 httpReqMess.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(accept));
             }
 
-            if (bearerExists && !string.IsNullOrEmpty(_tokenProvider.GetToken().AccessToken))
+            if (bearerExists && !string.IsNullOrEmpty(newToken?.AccessToken))
             {
-                var token = _tokenProvider.GetToken().AccessToken;
-                httpReqMess.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                httpReqMess.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken.AccessToken);
             }
 
             SetRequestContent(httpReqMess, apiRequest);

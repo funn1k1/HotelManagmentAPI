@@ -22,6 +22,6 @@ body {
 }
 
 .card-img-top {
-    height: 15vw;
-    object-fit: cover
+  height: 15vw;
+  object-fit: cover
 }
