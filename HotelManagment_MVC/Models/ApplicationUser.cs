@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace HotelManagment_API.Models
+namespace HotelManagment_MVC.Models
 {
     public class ApplicationUser : IdentityUser
     {

@@ -1,4 +1,4 @@
-﻿namespace HotelManagment_API.Models.DTO.Account
+﻿namespace HotelManagment_MVC.Models.DTO.Account
 {
     public class UserDTO
     {

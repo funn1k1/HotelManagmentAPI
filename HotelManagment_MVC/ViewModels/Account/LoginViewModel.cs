@@ -1,4 +1,4 @@
-﻿using HotelManagment_API.Models.DTO.Account;
+﻿using HotelManagment_MVC.Models.DTO.Account;
 
 namespace HotelManagment_MVC.ViewModels.Account
 {

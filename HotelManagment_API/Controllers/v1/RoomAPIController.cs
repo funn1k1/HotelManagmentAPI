@@ -52,10 +52,7 @@ namespace HotelManagment_API.Controllers.v1
         public async Task<ActionResult<APIResponse<RoomDTO>>> GetRoomAsync(int id)
         {
             var response = new APIResponse<RoomDTO>();
-            var room = await _roomRepo.GetAsync(
-                r => r.Id == id,
-                includeProperties: r => r.Hotel
-            );
+            var room = await _roomRepo.GetAsync(r => r.Id == id, includeProperties: r => r.Hotel);
             if (room == null)
             {
                 response.StatusCode = HttpStatusCode.NotFound;
@@ -70,7 +67,6 @@ namespace HotelManagment_API.Controllers.v1
         }
 
         [ResponseCache(CacheProfileName = "Cache2Min")]
-
         [HttpGet("{roomNumber}/hotels/{hotelId}", Name = "GetRoomByNumber")]
         [
             ProducesResponseType(StatusCodes.Status200OK),
@@ -135,7 +131,7 @@ namespace HotelManagment_API.Controllers.v1
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -153,7 +149,7 @@ namespace HotelManagment_API.Controllers.v1
             await _roomRepo.DeleteAsync(room);
 
             response.Result = _mapper.Map<RoomDTO>(room);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Ok(response);
         }
@@ -183,7 +179,7 @@ namespace HotelManagment_API.Controllers.v1
             await _roomRepo.UpdateAsync(room);
 
             response.Result = _mapper.Map<RoomDTO>(room);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Ok(response);
         }
@@ -211,7 +207,7 @@ namespace HotelManagment_API.Controllers.v1
             await _roomRepo.UpdateAsync(room);
 
             response.Result = _mapper.Map<RoomDTO>(room);
-            response.StatusCode = HttpStatusCode.NoContent;
+            response.StatusCode = HttpStatusCode.OK;
             response.IsSuccess = true;
             return Ok(response);
         }

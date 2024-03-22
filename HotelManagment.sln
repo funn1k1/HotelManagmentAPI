@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelManagment_API", "HotelManagmentAPI\HotelManagment_API.csproj", "{209ED06F-DF9E-44BA-868D-AC7ECEF8D74F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelManagment_MVC", "HotelManagment_MVC\HotelManagment_MVC.csproj", "{1A2F7776-BF3B-4A45-9BF0-2F5648F9451E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelManagment_MVC", "HotelManagment_MVC\HotelManagment_MVC.csproj", "{1A2F7776-BF3B-4A45-9BF0-2F5648F9451E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelManagment_Utility", "HotelManagment_Utility\HotelManagment_Utility.csproj", "{CE2C901B-356B-47DB-BADE-D3811190B52D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelManagment_Utility", "HotelManagment_Utility\HotelManagment_Utility.csproj", "{CE2C901B-356B-47DB-BADE-D3811190B52D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HotelManagment_API", "HotelManagment_API\HotelManagment_API.csproj", "{3DA1749F-1D2F-497E-81F5-D5495BCD67A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{209ED06F-DF9E-44BA-868D-AC7ECEF8D74F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{209ED06F-DF9E-44BA-868D-AC7ECEF8D74F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{209ED06F-DF9E-44BA-868D-AC7ECEF8D74F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{209ED06F-DF9E-44BA-868D-AC7ECEF8D74F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1A2F7776-BF3B-4A45-9BF0-2F5648F9451E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1A2F7776-BF3B-4A45-9BF0-2F5648F9451E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A2F7776-BF3B-4A45-9BF0-2F5648F9451E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{CE2C901B-356B-47DB-BADE-D3811190B52D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE2C901B-356B-47DB-BADE-D3811190B52D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE2C901B-356B-47DB-BADE-D3811190B52D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA1749F-1D2F-497E-81F5-D5495BCD67A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA1749F-1D2F-497E-81F5-D5495BCD67A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA1749F-1D2F-497E-81F5-D5495BCD67A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA1749F-1D2F-497E-81F5-D5495BCD67A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

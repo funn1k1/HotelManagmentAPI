@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using HotelManagment_API.Models.DTO.Account;
 using HotelManagment_MVC.Models;
 using HotelManagment_MVC.Models.DTO.Account;
 using HotelManagment_MVC.Services.Interfaces;

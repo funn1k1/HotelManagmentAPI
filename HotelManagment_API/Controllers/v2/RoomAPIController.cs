@@ -131,7 +131,7 @@ namespace HotelManagment_API.Controllers.v2
                     return NotFound(response);
                 }
 
-                var room = await _roomRepo.GetAsync(r => r.RoomNumber.ToLower() == roomDto.RoomNumber.ToLower() && r.HotelId == hotel.Id);
+                var room = await _roomRepo.GetAsync(r => r.RoomNumber == roomDto.RoomNumber && r.HotelId == hotel.Id);
                 if (room != null)
                 {
                     //ModelState.AddModelError("Name", "A hotel with this name already exists");
@@ -147,7 +147,7 @@ namespace HotelManagment_API.Controllers.v2
                 response.Result = newRoom;
                 response.IsSuccess = true;
                 response.StatusCode = HttpStatusCode.Created;
-                return CreatedAtRoute("GetRoom", new { id = response.Result.Id }, response);
+                return CreatedAtRoute("GetRoom", new { id = response.Result.Id }, response.Result);
             }
             catch
             {
@@ -157,7 +157,7 @@ namespace HotelManagment_API.Controllers.v2
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -190,7 +190,7 @@ namespace HotelManagment_API.Controllers.v2
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -225,9 +225,9 @@ namespace HotelManagment_API.Controllers.v2
 
         [Authorize(Roles = "Admin")]
         [HttpPatch("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateRoomAsync(int id, [FromBody] JsonPatchDocument<RoomUpdateDTO> patchDto)
